@@ -1,7 +1,7 @@
 # Личный проект «YetiCave»
 
 * Студент: [Артем Макаров](https://up.htmlacademy.ru/php/8/user/429879).
-* Наставник: [Михаил Куприянов] (https://up.htmlacademy.ru/php/8/user/541075).
+* Наставник: [Михаил Куприянов](https://up.htmlacademy.ru/php/8/user/541075).
 
 ---
 
