@@ -42,13 +42,11 @@ $ads = [
     ]
 ];
 
-function format_text ($number) {
+function format_number ($number) {
     $rounded_number = ceil($number);
-    if ($rounded_number >= 1000) {
-        $rounded_number = number_format($rounded_number, 0, ',', ' ');
-    }
-    $sum = $rounded_number . ' ₽';
-    return $sum;
+    $formatted_number = number_format($rounded_number, 0, ',', ' ');
+    $price = $formatted_number . ' ₽';
+    return $price;
 };
 ?>
 <!DOCTYPE html>
@@ -121,7 +119,7 @@ function format_text ($number) {
                         <div class="lot__state">
                             <div class="lot__rate">
                                 <span class="lot__amount">Стартовая цена</span>
-                                <span class="lot__cost"><?=format_text($ad['price']); ?></span>
+                                <span class="lot__cost"><?=format_number($ad['price']); ?></span>
                             </div>
                             <div class="lot__timer timer">
                                 12:23
