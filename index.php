@@ -1,13 +1,18 @@
 <?php
 require_once('functions.php');
-require_once('data.php');
+require_once('user.php');
+require_once('categories.php');
+require_once('ads.php');
 
-$data = get_data ();
+$user_info = get_user_info();
+$category_names = get_category_names();
+$ads = get_ads();
 
-$index_content = include_template ('index.php', $data);
-$clone_data = $data;
-$clone_data['page_content'] = $index_content;
-$index_page = include_template ('layout.php', $clone_data);
+$data = array_merge($user_info, $category_names, $ads);
+
+$index_content = include_template('index.php', $data);
+$data['page_content'] = $index_content;
+$index_page = include_template('layout.php', $data);
 
 print($index_page);
 ?>

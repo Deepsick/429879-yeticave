@@ -1,9 +1,11 @@
-<?php
-function get_data () {
+<?php 
+/**
+ * Возвращает список объявлений
+ * 
+ * @return Array
+ */
+function get_ads() {
     return [
-        'is_auth' => rand(0, 1),
-        'user_name' => 'Артем',
-        'category_names' => ['Доски и лыжи', 'Крепления', 'Ботинки', 'Одежда', 'Инструменты', 'Разное'],
         'ads' => [
             [
                 'title' => '2014 Rossignol District Snowboard',
@@ -42,7 +44,6 @@ function get_data () {
                 'url' => 'img/lot-6.jpg'
             ]
         ]
-
     ];
 };
 ?>

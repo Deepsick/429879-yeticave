@@ -1,5 +1,13 @@
 <?php 
-function include_template ($name, $data) {
+
+/** 
+ * Принимает на вход имя шаблона и данные для шаблона, возвращает html-код с подставленными данными
+ * 
+ * @param $name 
+ * @param $data 
+ * @return string
+ */
+function include_template($name, $data) {
     $name = 'templates/' . $name;
     $result = '';
 
@@ -16,7 +24,13 @@ function include_template ($name, $data) {
     return $result;
 };
 
-function format_number ($number) {
+/**
+ * Принимает на вход число и возвращает отформатированную цену
+ * 
+ * @param $number
+ * @return string
+ */
+function format_number($number) {
     $rounded_number = ceil($number);
     $formatted_number = number_format($rounded_number, 0, ',', ' ');
     $price = $formatted_number . ' ₽';
