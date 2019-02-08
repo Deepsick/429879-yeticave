@@ -54,12 +54,12 @@ function get_time_left()
     $hours_left = floor($seconds_left / 3600);
     $minutes_left = floor(($seconds_left % 3600) / 60);
     if ($hours_left < 10) {
-        $hours_left = 0 .$hours_left;
+        $hours_left = 0 . $hours_left;
     }
     if ($minutes_left < 10) {
-        $minutes_left = 0 .$minutes_left;
+        $minutes_left = 0 . $minutes_left;
     }
-    $timer = $hours_left.':'.$minutes_left;
+    $timer = $hours_left .':'. $minutes_left;
 
     return $timer;
 }
