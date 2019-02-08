@@ -1,66 +1,66 @@
-<?php 
+<?php
 /**
  * Принимает на вход имя шаблона и данные для шаблона, возвращает html-код с подставленными данными.
  *
- * @param $name Имя шаблона
- * @param $data Массив с данными
+ * @param string $name Имя шаблона
+ * @param string[] $data Массив с данными
  *
  * @return string Html-код с подставленными данными
  */
-function include_template(string $name, array $data)
+function include_template(string $name, array $data): string
 {
-    $name = 'templates/'.$name;
-    $result = '';
+	$name = 'templates/'.$name;
+	$result = '';
 
-    if (!is_readable($name)) {
-        return $result;
-    }
+	if (!is_readable($name)) {
+		return $result;
+	}
 
-    ob_start();
-    extract($data);
-    require $name;
+	ob_start();
+	extract($data);
+	require $name;
 
-    $result = ob_get_clean();
+	$result = ob_get_clean();
 
-    return $result;
+	return $result;
 }
 
 /**
  * Принимает на вход число и возвращает отформатированную цену.
  *
- * @param $number Число в виде строки для форматирования
+ * @param string $number Число в виде строки для форматирования
  *
  * @return string Отформатированная цена
  */
-function format_number(string $number)
+function format_number(string $number): string
 {
-    $rounded_number = ceil($number);
-    $formatted_number = number_format($rounded_number, 0, ',', ' ');
-    $price = $formatted_number.' ₽';
-
-    return $price;
+	return number_format(ceil($number), 
+						 0, 
+						 ',', 
+						 ' ')
+		.' ₽';
 }
 
 /**
  * Возвращает оставшееся время до начала следующего дня.
  *
+ * @param string $expiredAt Время экспирации лота
+ * 
  * @return string Время до окончания дня в формате ЧЧ:ММ
  */
-function get_time_left()
+function get_time_left(string $expiredAt = 'tomorrow'): string
 {
-    $now = time();
-    $tomorrow = strtotime('tomorrow');
-    $seconds_left = $tomorrow - $now;
-    $hours_left = floor($seconds_left / 3600);
-    $minutes_left = floor(($seconds_left % 3600) / 60);
-    if ($hours_left < 10) {
-        $hours_left = 0 . $hours_left;
-    }
-    if ($minutes_left < 10) {
-        $minutes_left = 0 . $minutes_left;
-    }
-    $timer = $hours_left .':'. $minutes_left;
+	$seconds_left = strtotime($expiredAt) - time();
+	$hours_left = floor($seconds_left / 3600);
+	$minutes_left = floor(($seconds_left % 3600) / 60);
 
-    return $timer;
+	if ($hours_left < 10) {
+		$hours_left = 0 . $hours_left;
+	}
+
+	if ($minutes_left < 10) {
+		$minutes_left = 0 . $minutes_left;
+	}
+
+	return $hours_left .':'. $minutes_left;
 }
-?>

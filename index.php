@@ -15,4 +15,3 @@ $data['page_content'] = $index_content;
 $index_page = include_template('layout.php', $data);
 
 echo $index_page;
-?>
