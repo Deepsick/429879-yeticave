@@ -1,7 +1,7 @@
 <?php
 /**
 * @var string[] $category_names Массив имен категорий
-* @var string[] $ads Массив лотов
+* @var array $ads Массив лотов
 */
 ?>
 <section class="promo">

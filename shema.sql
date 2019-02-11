@@ -1,52 +1,50 @@
-CREATE DATABASE yeticave
+CREATE DATABASE `429879-yeticave`
 DEFAULT CHARACTER SET utf8
 DEFAULT COLLATE utf8_general_ci;
 
-USE yeticave;
+USE `429879-yeticave`;
  
-CREATE TABLE categories (
-id INT AUTO_INCREMENT PRIMARY KEY,
-name CHAR(64)
+CREATE TABLE `categories` (
+`id` INT AUTO_INCREMENT PRIMARY KEY,
+`name` VARCHAR(64) NOT NULL UNIQUE
 );
 
-CREATE TABLE lots (
-id INT AUTO_INCREMENT PRIMARY KEY,
-title CHAR(64),
-description CHAR(128),
-img_url CHAR,
-start_price INT,
-creation DATETIME,
-expiration DATETIME,
-bet_step INT,
-category_id INT 
+CREATE TABLE `lots` (
+`id` INT AUTO_INCREMENT PRIMARY KEY,
+`title` VARCHAR(128) NOT NULL,
+`description` VARCHAR(255) NOT NULL,
+`img_url` VARCHAR(255) NOT NULL, 
+`start_price` INT NOT NULL,
+`date_create` DATETIME DEFAULT NOW(),
+`date_expire` DATETIME NOT NULL,
+`bet_step` INT NOT NULL,
+`category_id` INT NOT NULL,
+`user_id` INT NOT NULL
 );
 
-CREATE TABLE bets (
-id INT AUTO_INCREMENT PRIMARY KEY,
-creation DATETIME,
-price INT,
-lot_id INT
+CREATE TABLE `bets` (
+`id` INT AUTO_INCREMENT PRIMARY KEY,
+`date_create` DATETIME DEFAULT NOW(),
+`price` INT NOT NULL,
+`user_id` INT NOT NULL
 );
 
-CREATE TABLE users (
-id INT AUTO_INCREMENT PRIMARY KEY,
-registration DATETIME,
-email CHAR(64),
-name CHAR(64),
-password CHAR(64),
-avatar_url CHAR,
-contacts CHAR(128),
-bet_id INT,
-lot_id INT
+CREATE TABLE `users` (
+`id` INT AUTO_INCREMENT PRIMARY KEY,
+`date_register` DATETIME DEFAULT NOW(),
+`email` VARCHAR(64) NOT NULL UNIQUE,
+`name` VARCHAR(64) NOT NULL UNIQUE,
+`password` VARCHAR(64) NOT NULL,
+`avatar_url` VARCHAR(255),
+`contacts` VARCHAR(255) NOT NULL
 );
 
-CREATE UNIQUE INDEX category_name ON categories(name);
-CREATE UNIQUE INDEX user_email ON users(email);
-CREATE UNIQUE INDEX user_password ON users(password);
-CREATE UNIQUE INDEX user_contacts ON users(contacts);
-
-CREATE INDEX lot_title ON lots(title);
-CREATE INDEX lot_price ON lots(start_price);
-CREATE INDEX user_name ON users(name);
-CREATE INDEX bet_price ON bets(price);
+-- CREATE UNIQUE INDEX `category_name` ON `categories`(`name`);
+-- CREATE UNIQUE INDEX `user_email` ON `users`(`email`);
+-- CREATE UNIQUE INDEX `user_contacts` ON `users`(`contacts`);
+-- 
+-- CREATE INDEX `lot_title` ON `lots`(`title`);
+-- CREATE INDEX `lot_price` ON `lots`(`start_price`);
+-- CREATE INDEX `user_name` ON `users`(`name`);
+-- CREATE INDEX `bet_price` ON `bets`(`price`);
  
