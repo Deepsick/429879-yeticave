@@ -35,16 +35,9 @@ CREATE TABLE `users` (
 `email` VARCHAR(64) NOT NULL UNIQUE,
 `name` VARCHAR(64) NOT NULL UNIQUE,
 `password` VARCHAR(64) NOT NULL,
-`avatar_url` VARCHAR(255),
+`avatar_url` VARCHAR(255) DEFAULT NULL,
 `contacts` VARCHAR(255) NOT NULL
 );
 
--- CREATE UNIQUE INDEX `category_name` ON `categories`(`name`);
--- CREATE UNIQUE INDEX `user_email` ON `users`(`email`);
--- CREATE UNIQUE INDEX `user_contacts` ON `users`(`contacts`);
--- 
--- CREATE INDEX `lot_title` ON `lots`(`title`);
--- CREATE INDEX `lot_price` ON `lots`(`start_price`);
--- CREATE INDEX `user_name` ON `users`(`name`);
--- CREATE INDEX `bet_price` ON `bets`(`price`);
+
  
