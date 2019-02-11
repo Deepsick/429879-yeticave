@@ -4,10 +4,9 @@
  *
  * @return array Список имен категорий
  */
-function get_category_names()
+function get_category_names(): array
 {
     return [
         'category_names' => ['Доски и лыжи', 'Крепления', 'Ботинки', 'Одежда', 'Инструменты', 'Разное'],
     ];
 }
-?>

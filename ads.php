@@ -4,7 +4,7 @@
  *
  * @return array Список лотов
  */
-function get_ads()
+function get_ads(): array
 {
     return [
         'ads' => [
@@ -47,4 +47,3 @@ function get_ads()
     ],
     ];
 }
-?>
