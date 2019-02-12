@@ -26,7 +26,8 @@ CREATE TABLE `bets` (
 `id` INT AUTO_INCREMENT PRIMARY KEY,
 `date_create` DATETIME DEFAULT NOW(),
 `price` INT NOT NULL,
-`user_id` INT NOT NULL
+`user_id` INT NOT NULL,
+`lot_id` INT NOT NULL 
 );
 
 CREATE TABLE `users` (
