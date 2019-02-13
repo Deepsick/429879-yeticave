@@ -19,7 +19,8 @@ CREATE TABLE `lots` (
 `date_expire` DATETIME NOT NULL,
 `bet_step` INT NOT NULL,
 `category_id` INT NOT NULL,
-`user_id` INT NOT NULL
+`user_id` INT NOT NULL,
+`winner_id` INT DEFAULT NULL
 );
 
 CREATE TABLE `bets` (
