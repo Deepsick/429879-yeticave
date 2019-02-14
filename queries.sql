@@ -49,14 +49,10 @@ VALUES
 
 CREATE INDEX lot_title ON `lots`(`title`);
 CREATE INDEX start_price ON `lots`(`start_price`);
-CREATE INDEX lot_img ON `lots`(`img_url`);
 CREATE INDEX lot_creation ON `lots`(`date_create`);
 CREATE INDEX new_lot ON `lots`(`date_expire`, `winner_id`);
 
 CREATE INDEX bet_creation ON `bets`(`date_create`);
-CREATE INDEX bet_value ON `bets`(`price`);
-
-CREATE INDEX category_name ON `categories`(`name`);
 
 -- Получаем все категории
 SELECT * FROM `categories`;
