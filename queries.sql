@@ -44,8 +44,7 @@ VALUES
 (13000, 2, 2), 
 (14000, 6, 5),
 (14000, 6, 1),
-(15000, 3, 1), 
-(15000, 4, 6); 
+(15000, 3, 1);
 
 CREATE INDEX lot_title ON `lots`(`title`);
 CREATE INDEX start_price ON `lots`(`start_price`);
@@ -59,7 +58,7 @@ SELECT * FROM `categories`;
 
 -- Получаем новые открытые лоты
 SELECT `l`.`title`, `l`.`start_price`, `l`.`img_url`, MAX(`b`.`price`) AS `max_price`, `c`.`name` AS `category` FROM `lots` `l`
-JOIN `bets` `b`
+LEFT JOIN `bets` `b`
 ON `l`.`id` = `b`.`lot_id`
 JOIN `categories` `c`
 ON `l`.`category_id` = `c`.`id`
