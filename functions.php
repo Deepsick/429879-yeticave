@@ -3,7 +3,7 @@
  * Принимает на вход имя шаблона и данные для шаблона, возвращает html-код с подставленными данными.
  *
  * @param string $name Имя шаблона
- * @param string[] $data Массив с данными
+ * @param array $data Массив с данными
  *
  * @return string Html-код с подставленными данными
  */
@@ -63,4 +63,24 @@ function get_time_left(string $expiredAt = 'tomorrow'): string
 	}
 
 	return $hours_left .':'. $minutes_left;
+}
+
+/**
+ * Получает на вход соединение с БД, запрос sql. Возвращает массив данных
+ * 
+ * @param mysqli $link  Ресурс соединения
+ * @param string $sql  SQL запрос 
+ * 
+ * @return array массив данных
+ */
+function get_data (mysqli $link, string $sql): array 
+{
+	$data = mysqli_query($link, $sql);
+
+	if (!$data) {
+		$error = mysqli_error($link);
+		print('Ошибка MySQL: ${$error}');
+	};
+
+	return mysqli_fetch_all($data, MYSQLI_ASSOC); 
 }
