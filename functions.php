@@ -75,7 +75,8 @@ function get_time_left(string $expiredAt = 'tomorrow'): string
 function get_lots (mysqli $link): array 
 {
 	$lots_sql = 
-		"SELECT 
+		"SELECT
+			`l`.id, 
 			`l`.`title`, 
 			`l`.`start_price`, 
 			`l`.`img_url`,
@@ -102,11 +103,7 @@ function get_lots (mysqli $link): array
 
 	$data = mysqli_query($link, $lots_sql);
 
-	if (!$data) {
-		return [];
-	}
-
-	return mysqli_fetch_all($data, MYSQLI_ASSOC); 
+	return mysqli_fetch_all($data, MYSQLI_ASSOC) ?? []; 
 }
 
 /**
@@ -122,9 +119,78 @@ function get_categories (mysqli $link): array
 
 	$data = mysqli_query($link, $categories_sql);
 
-	if (!$data) {
-		return [];
-	}
+	return mysqli_fetch_all($data, MYSQLI_ASSOC) ?? []; 
+}
 
-	return mysqli_fetch_all($data, MYSQLI_ASSOC); 
+/**
+ * Получает на вход соединение с БД, id. Возвращает ставки по id лота
+ * @param mysqli $link  Ресурс соединения
+ * @param string $id  id лота
+ * 
+ * @return array массив ставок
+ */
+function get_bets (mysqli $link, string $id = ''): array 
+{
+	$bets_sql = 
+		"SELECT 
+			`b`.`price`,
+			`b`.date_create,
+			`u`.`name` AS `user_name`
+		FROM 
+			`lots` `l`
+		JOIN 
+			`bets` `b`
+		ON 
+			`b`.`lot_id` = `l`.`id`
+		JOIN 
+			`users` `u`
+		ON 
+			`b`.`user_id` = `u`.`id`
+		WHERE 
+			`l`.`id` = ?
+		ORDER BY 
+			`b`.`date_create` DESC";
+
+	$stmt = db_get_prepare_stmt($link, $bets_sql, [$id]);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
+	return mysqli_fetch_all($result, MYSQLI_ASSOC) ?? []; 
+}
+
+/**
+ * Получает на вход соединение с БД, id. Возвращает лот по id
+ * 
+ * @param mysqli $link  Ресурс соединения
+ * @param string $id  id лота
+ * 
+ * @return array лот
+ */
+function get_lot(mysqli $link, string $id = ''): array 
+{	
+	$lot_sql = 
+		"SELECT 
+			`l`.`id`, 
+			`l`.`title`, 
+			`l`.`start_price`, 
+			`l`.`img_url`,
+			`l`.`description`,
+			`l`.`bet_step`, 
+			`c`.`name` 
+		AS 
+			`category`
+		FROM 
+			`lots` `l`
+		JOIN 
+			`categories` `c`
+		ON 
+			`c`.`id` = `l`.`category_id`
+		WHERE 
+			`l`.`id` = ?;";
+		
+	$stmt = db_get_prepare_stmt($link, $lot_sql, [$id]);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
+	return mysqli_fetch_all($result, MYSQLI_ASSOC) ?? []; 
 }
