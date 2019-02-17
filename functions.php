@@ -3,7 +3,7 @@
  * Принимает на вход имя шаблона и данные для шаблона, возвращает html-код с подставленными данными.
  *
  * @param string $name Имя шаблона
- * @param string[] $data Массив с данными
+ * @param array $data Массив с данными
  *
  * @return string Html-код с подставленными данными
  */
@@ -63,4 +63,68 @@ function get_time_left(string $expiredAt = 'tomorrow'): string
 	}
 
 	return $hours_left .':'. $minutes_left;
+}
+
+/**
+ * Получает на вход соединение с БД. Возвращает массив лотов
+ * 
+ * @param mysqli $link  Ресурс соединения
+ * 
+ * @return array массив лотов
+ */
+function get_lots (mysqli $link): array 
+{
+	$lots_sql = 
+		"SELECT 
+			`l`.`title`, 
+			`l`.`start_price`, 
+			`l`.`img_url`,
+			MAX(`b`.`price`) AS `max_price`, 
+			`c`.`name` AS `category` 
+		FROM 
+			`lots` `l`				 
+		LEFT JOIN 
+			`bets` `b`
+		ON 
+			`l`.`id` = `b`.`lot_id`
+		JOIN 
+			`categories` `c`
+		ON 
+			`l`.`category_id` = `c`.`id`
+		WHERE 
+			`l`.`date_expire` > NOW() 
+		AND 
+			`l`.`winner_id` IS NULL
+		GROUP BY 
+			`l`.`id`	
+		ORDER BY 
+			`l`.`date_create` DESC;";
+
+	$data = mysqli_query($link, $lots_sql);
+
+	if (!$data) {
+		return [];
+	}
+
+	return mysqli_fetch_all($data, MYSQLI_ASSOC); 
+}
+
+/**
+ * Получает на вход соединение с БД. Возвращает массив категорий
+ * 
+ * @param mysqli $link  Ресурс соединения
+ * 
+ * @return array массив категорий
+ */
+function get_categories (mysqli $link): array 
+{
+	$categories_sql = "SELECT * FROM `categories`;";
+
+	$data = mysqli_query($link, $categories_sql);
+
+	if (!$data) {
+		return [];
+	}
+
+	return mysqli_fetch_all($data, MYSQLI_ASSOC); 
 }

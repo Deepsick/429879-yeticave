@@ -9,9 +9,9 @@
     <p class="promo__text">На нашем интернет-аукционе ты найдёшь самое эксклюзивное сноубордическое и горнолыжное
         снаряжение.</p>
     <ul class="promo__list">
-        <?php foreach ($category_names as $category_name): ?>
+        <?php foreach ($categories as $category): ?>
         <li class="promo__item promo__item--boards">
-            <a class="promo__link" href="pages/all-lots.html"><?=$category_name; ?></a>
+            <a class="promo__link" href="pages/all-lots.html"><?=$category['name']; ?></a>
         </li>
         <?php endforeach; ?>
     </ul>
@@ -24,7 +24,7 @@
         <?php foreach($ads as $ad): ?>
         <li class="lots__item lot">
             <div class="lot__image">
-                <img src="<?=htmlspecialchars($ad['url']); ?>" width="350" height="260" alt="">
+                <img src="<?=htmlspecialchars($ad['img_url']); ?>" width="350" height="260" alt="">
             </div>
             <div class="lot__info">
                 <span class="lot__category"><?=htmlspecialchars($ad['category']); ?></span>
@@ -33,7 +33,7 @@
                 <div class="lot__state">
                     <div class="lot__rate">
                         <span class="lot__amount">Стартовая цена</span>
-                        <span class="lot__cost"><?=htmlspecialchars(format_number($ad['price'])); ?></span>
+                        <span class="lot__cost"><?=htmlspecialchars(format_number($ad['start_price'])); ?></span>
                     </div>
                     <div class="lot__timer timer">
                         <?=get_time_left();  ?>

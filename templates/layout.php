@@ -33,9 +33,9 @@
                 <a class="main-header__add-lot button" href="pages/add-lot.html">Добавить лот</a>
 
                 <nav class="user-menu">
-                    <?php if ($is_auth === 1): ?>
+                    <?php if ($user_info['is_auth'] === 1): ?>
                     <div class="user-menu__logged">
-                        <p><?=$user_name; ?></p>
+                        <p><?=$user_info['user_name']; ?></p>
                     </div>
                     <?php else: ?>
                     <ul class="user-menu__list">
@@ -59,9 +59,9 @@
     <footer class="main-footer">
         <nav class="nav">
             <ul class="nav__list container">
-                <?php foreach ($category_names as $category_name): ?>
+                <?php foreach ($categories as $category): ?>
                 <li class="nav__item">
-                    <a href="pages/all-lots.html"><?=$category_name; ?></a>
+                    <a href="pages/all-lots.html"><?=$category['name']; ?></a>
                 </li>
                 <?php endforeach; ?>
             </ul>
