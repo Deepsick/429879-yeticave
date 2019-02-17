@@ -66,20 +66,49 @@ function get_time_left(string $expiredAt = 'tomorrow'): string
 }
 
 /**
- * Получает на вход соединение с БД, запрос sql. Возвращает массив данных
+ * Получает на вход соединение с БД. Возвращает массив лотов
  * 
  * @param mysqli $link  Ресурс соединения
- * @param string $sql  SQL запрос 
  * 
- * @return array массив данных
+ * @return array массив данных или ошибку MYSQL
  */
-function get_data (mysqli $link, string $sql): array 
+function get_lots (mysqli $link): array 
 {
-	$data = mysqli_query($link, $sql);
+	$lots_sql = "SELECT `l`.`title`, `l`.`start_price`, `l`.`img_url`, MAX(`b`.`price`) AS `max_price`, `c`.`name` AS `category` FROM `lots` `l`
+				 LEFT JOIN `bets` `b`
+				 ON `l`.`id` = `b`.`lot_id`
+				 JOIN `categories` `c`
+				 ON `l`.`category_id` = `c`.`id`
+				 WHERE `l`.`date_expire` > NOW() AND `l`.`winner_id` IS NULL
+				 GROUP BY `l`.`id`	
+				 ORDER BY `l`.`date_create` DESC;";
+
+	$data = mysqli_query($link, $lots_sql);
 
 	if (!$data) {
 		$error = mysqli_error($link);
-		print('Ошибка MySQL: ${$error}');
+		return 'Ошибка MySQL: {$error}';
+	};
+
+	return mysqli_fetch_all($data, MYSQLI_ASSOC); 
+}
+
+/**
+ * Получает на вход соединение с БД. Возвращает массив имен категорий
+ * 
+ * @param mysqli $link  Ресурс соединения
+ * 
+ * @return array массив данных или ошибку MYSQL
+ */
+function get_categories (mysqli $link): array 
+{
+	$categories_sql = "SELECT * FROM `categories`;";
+
+	$data = mysqli_query($link, $categories_sql);
+
+	if (!$data) {
+		$error = mysqli_error($link);
+		return 'Ошибка MySQL: {$error}';
 	};
 
 	return mysqli_fetch_all($data, MYSQLI_ASSOC); 

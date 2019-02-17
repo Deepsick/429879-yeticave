@@ -33,9 +33,9 @@
                 <a class="main-header__add-lot button" href="pages/add-lot.html">Добавить лот</a>
 
                 <nav class="user-menu">
-                    <?php if ($is_auth === 1): ?>
+                    <?php if ($user_info['is_auth'] === 1): ?>
                     <div class="user-menu__logged">
-                        <p><?=$user_name; ?></p>
+                        <p><?=$user_info['user_name']; ?></p>
                     </div>
                     <?php else: ?>
                     <ul class="user-menu__list">
