@@ -164,9 +164,9 @@ function get_bets (mysqli $link, string $id = ''): array
  * @param mysqli $link  Ресурс соединения
  * @param string $id  id лота
  * 
- * @return array лот
+ * @return array|null лот
  */
-function get_lot(mysqli $link, string $id = ''): array 
+function get_lot(mysqli $link, string $id = ''): ?array 
 {	
 	$lot_sql = 
 		"SELECT 
@@ -187,10 +187,38 @@ function get_lot(mysqli $link, string $id = ''): array
 			`c`.`id` = `l`.`category_id`
 		WHERE 
 			`l`.`id` = ?;";
-		
+
 	$stmt = db_get_prepare_stmt($link, $lot_sql, [$id]);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    
-	return mysqli_fetch_all($result, MYSQLI_ASSOC) ?? []; 
+	mysqli_stmt_execute($stmt);
+	$result = mysqli_stmt_get_result($stmt);
+
+	return mysqli_fetch_assoc($result); 
+}
+
+/**
+ * Получает на вход дату ставки и форматирует ее в соответствии с шаблоном
+ * 
+ * @param string $date  Дата в виде строки
+ * 
+ * @return string возвращает отформатированную дату ставки
+ */
+function get_format_date(string $date): string
+{	
+	date_default_timezone_set('Europe/Moscow');
+
+	$minutes_in_hour = 60;
+	$seconds_in_minute = 60;
+	$hours_in_day = 24;
+	$passed_minutes = (time() - strtotime($date)) / $seconds_in_minute;
+	if ($passed_minutes >= ($hours_in_day * $minutes_in_hour)) {
+		return date('d:m:y H:i', $passed_minutes * $seconds_in_minute);
+	}
+	elseif ($passed_minutes >= $minutes_in_hour) {
+		return ($passed_minutes / $minutes_in_hour). 'часов назад';
+	} 
+	elseif ($passed_minutes >= 1) {
+		return $passed_minutes . 'минут назад';
+	} else {
+		return 'только что';
+	}
 }
