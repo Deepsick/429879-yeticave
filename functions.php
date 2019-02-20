@@ -212,10 +212,10 @@ function get_format_date(string $date): string
 		return date('d:m:y H:i', strtotime($date));
 	}
 	elseif ($passed_minutes >= $minutes_in_hour) {
-		return ($passed_minutes / $minutes_in_hour). 'часов назад';
+		return floor(($passed_minutes / $minutes_in_hour)). ' часов назад';
 	} 
 	elseif ($passed_minutes >= 1) {
-		return $passed_minutes . 'минут назад';
+		return floor($passed_minutes) . ' минут назад';
 	} else {
 		return 'только что';
 	}
