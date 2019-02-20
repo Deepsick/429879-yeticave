@@ -7,7 +7,6 @@ require_once 'mysql_helper.php';
 require_once 'user.php';
 
 $categories = get_categories($connection);
-
 if (isset($_GET['id']) && $_GET['id'] !== '') {
     $lot = get_lot($connection, $_GET['id']);
 

@@ -212,11 +212,41 @@ function get_format_date(string $date): string
 		return date('d:m:y H:i', strtotime($date));
 	}
 	elseif ($passed_minutes >= $minutes_in_hour) {
-		return floor(($passed_minutes / $minutes_in_hour)). ' часов назад';
+		return floor(($passed_minutes / $minutes_in_hour)). ' ' . nounEnding(floor(($passed_minutes / $minutes_in_hour)), ['час', 'часа', 'часов']);
 	} 
 	elseif ($passed_minutes >= 1) {
-		return floor($passed_minutes) . ' минут назад';
+		return floor($passed_minutes) . ' ' . nounEnding(floor($passed_minutes), ['минута', 'минуты', 'минут']);
 	} else {
 		return 'только что';
 	}
+}
+
+/**
+ * Получает на вход количество часов(минут) и возвращает правильное окончание для переданного количества
+ * 
+ * @param string $number  Количество часов или минут
+ * @param string[] $words  массив окончаний
+ * 
+ * @return string возвращает правильно отформатированное окончание для дат
+ */
+function nounEnding(string $number, array $words = ['one', 'two', 'many']): string
+{
+    $number = (int) $number;
+    $mod10 = $number % 10;
+    switch (true) {
+        case ($number >= 10 && $number <= 20):
+            return $words[2];
+        
+        case ($mod10 > 5):
+            return $words[2];
+        
+        case ($mod10 === 1):
+            return $words[0];
+        
+        case ($mod10 === 2 || $mod10 === 3):
+            return $words[1];
+        
+        default:
+            return $words[2];
+    }
 }
