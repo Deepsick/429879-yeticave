@@ -1,4 +1,6 @@
 <?php
+date_default_timezone_set('Europe/Moscow');
+
 require_once 'db.php';
 require_once 'functions.php';
 require_once 'mysql_helper.php';

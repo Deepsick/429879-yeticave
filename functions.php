@@ -204,14 +204,12 @@ function get_lot(mysqli $link, string $id = ''): ?array
  */
 function get_format_date(string $date): string
 {	
-	date_default_timezone_set('Europe/Moscow');
-
 	$minutes_in_hour = 60;
 	$seconds_in_minute = 60;
 	$hours_in_day = 24;
 	$passed_minutes = (time() - strtotime($date)) / $seconds_in_minute;
 	if ($passed_minutes >= ($hours_in_day * $minutes_in_hour)) {
-		return date('d:m:y H:i', $passed_minutes * $seconds_in_minute);
+		return date('d:m:y H:i', strtotime($date));
 	}
 	elseif ($passed_minutes >= $minutes_in_hour) {
 		return ($passed_minutes / $minutes_in_hour). 'часов назад';
