@@ -1,6 +1,6 @@
 <?php
 /**
-* @var string[] $category_names Массив имен категорий
+* @var array $categories Массив имен категорий
 * @var array $ads Массив лотов
 */
 ?>
@@ -29,7 +29,7 @@
             <div class="lot__info">
                 <span class="lot__category"><?=htmlspecialchars($ad['category']); ?></span>
                 <h3 class="lot__title"><a class="text-link"
-                        href="pages/lot.html"><?=htmlspecialchars($ad['title']); ?></a></h3>
+                        href="lot.php?id=<?=$ad['id']  ?>"><?=htmlspecialchars($ad['title']); ?></a></h3>
                 <div class="lot__state">
                     <div class="lot__rate">
                         <span class="lot__amount">Стартовая цена</span>

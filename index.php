@@ -20,7 +20,8 @@ $index_page = include_template(
     [
         'user_info' => $user_info,
         'categories' => $categories,
-        'page_content' => $index_content
+        'page_content' => $index_content,
+        'page_title' => 'Yeticave - Главная страница'
     ]
 );
 

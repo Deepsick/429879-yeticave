@@ -38,12 +38,15 @@ VALUES
 INSERT INTO `bets`
 (`price`, `user_id`,`lot_id`) 
 VALUES 
+(9000, 3, 4);
 (11000, 3, 4), 
 (15000, 1, 3), 
 (12000, 4, 3), 
 (13000, 2, 2), 
 (14000, 6, 5),
 (14000, 6, 1),
+(15000, 3, 1),
+(15000, 3, 1),
 (15000, 3, 1);
 
 CREATE INDEX lot_title ON `lots`(`title`);

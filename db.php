@@ -1,5 +1,11 @@
 <?php
-$connection = mysqli_connect('localhost', 'root', '1', '429879-yeticave');
+if (!file_exists('db_config.php')) {
+    exit('Нет конфигурации для БД');
+}
+
+require_once 'db_config.php';
+
+$connection = mysqli_connect($database_host, $database_user, $database_password, $database_name);
 
 if (!$connection) {
     echo 'Ошибка подключения:' . mysqli_connect_error();

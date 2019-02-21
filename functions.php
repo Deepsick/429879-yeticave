@@ -75,7 +75,8 @@ function get_time_left(string $expiredAt = 'tomorrow'): string
 function get_lots (mysqli $link): array 
 {
 	$lots_sql = 
-		"SELECT 
+		"SELECT
+			`l`.id, 
 			`l`.`title`, 
 			`l`.`start_price`, 
 			`l`.`img_url`,
@@ -102,11 +103,7 @@ function get_lots (mysqli $link): array
 
 	$data = mysqli_query($link, $lots_sql);
 
-	if (!$data) {
-		return [];
-	}
-
-	return mysqli_fetch_all($data, MYSQLI_ASSOC); 
+	return mysqli_fetch_all($data, MYSQLI_ASSOC) ?? []; 
 }
 
 /**
@@ -122,9 +119,134 @@ function get_categories (mysqli $link): array
 
 	$data = mysqli_query($link, $categories_sql);
 
-	if (!$data) {
-		return [];
-	}
+	return mysqli_fetch_all($data, MYSQLI_ASSOC) ?? []; 
+}
 
-	return mysqli_fetch_all($data, MYSQLI_ASSOC); 
+/**
+ * Получает на вход соединение с БД, id. Возвращает ставки по id лота
+ * @param mysqli $link  Ресурс соединения
+ * @param string $id  id лота
+ * 
+ * @return array массив ставок
+ */
+function get_bets (mysqli $link, string $id = ''): array 
+{
+	$bets_sql = 
+		"SELECT 
+			`b`.`price`,
+			`b`.date_create,
+			`u`.`name` AS `user_name`
+		FROM 
+			`lots` `l`
+		JOIN 
+			`bets` `b`
+		ON 
+			`b`.`lot_id` = `l`.`id`
+		JOIN 
+			`users` `u`
+		ON 
+			`b`.`user_id` = `u`.`id`
+		WHERE 
+			`l`.`id` = ?
+		ORDER BY 
+			`b`.`date_create` DESC";
+
+	$stmt = db_get_prepare_stmt($link, $bets_sql, [$id]);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
+	return mysqli_fetch_all($result, MYSQLI_ASSOC) ?? []; 
+}
+
+/**
+ * Получает на вход соединение с БД, id. Возвращает лот по id
+ * 
+ * @param mysqli $link  Ресурс соединения
+ * @param string $id  id лота
+ * 
+ * @return array|null лот
+ */
+function get_lot(mysqli $link, string $id = ''): ?array 
+{	
+	$lot_sql = 
+		"SELECT 
+			`l`.`id`, 
+			`l`.`title`, 
+			`l`.`start_price`, 
+			`l`.`img_url`,
+			`l`.`description`,
+			`l`.`bet_step`, 
+			`c`.`name` 
+		AS 
+			`category`
+		FROM 
+			`lots` `l`
+		JOIN 
+			`categories` `c`
+		ON 
+			`c`.`id` = `l`.`category_id`
+		WHERE 
+			`l`.`id` = ?;";
+
+	$stmt = db_get_prepare_stmt($link, $lot_sql, [$id]);
+	mysqli_stmt_execute($stmt);
+	$result = mysqli_stmt_get_result($stmt);
+
+	return mysqli_fetch_assoc($result); 
+}
+
+/**
+ * Получает на вход дату ставки и форматирует ее в соответствии с шаблоном
+ * 
+ * @param string $date  Дата в виде строки
+ * 
+ * @return string возвращает отформатированную дату ставки
+ */
+function get_format_date(string $date): string
+{	
+	$minutes_in_hour = 60;
+	$seconds_in_minute = 60;
+	$hours_in_day = 24;
+	$passed_minutes = (time() - strtotime($date)) / $seconds_in_minute;
+	if ($passed_minutes >= ($hours_in_day * $minutes_in_hour)) {
+		return date('d:m:y H:i', strtotime($date));
+	}
+	elseif ($passed_minutes >= $minutes_in_hour) {
+		return floor(($passed_minutes / $minutes_in_hour)). ' ' . nounEnding(floor(($passed_minutes / $minutes_in_hour)), ['час', 'часа', 'часов']);
+	} 
+	elseif ($passed_minutes >= 1) {
+		return floor($passed_minutes) . ' ' . nounEnding(floor($passed_minutes), ['минута', 'минуты', 'минут']);
+	} else {
+		return 'только что';
+	}
+}
+
+/**
+ * Получает на вход количество часов(минут) и возвращает правильное окончание для переданного количества
+ * 
+ * @param string $number  Количество часов или минут
+ * @param string[] $words  массив окончаний
+ * 
+ * @return string возвращает правильно отформатированное окончание для дат
+ */
+function nounEnding(string $number, array $words = ['one', 'two', 'many']): string
+{
+    $number = (int) $number;
+    $mod10 = $number % 10;
+    switch (true) {
+        case ($number >= 10 && $number <= 20):
+            return $words[2];
+        
+        case ($mod10 > 5):
+            return $words[2];
+        
+        case ($mod10 === 1):
+            return $words[0];
+        
+        case ($mod10 === 2 || $mod10 === 3):
+            return $words[1];
+        
+        default:
+            return $words[2];
+    }
 }
