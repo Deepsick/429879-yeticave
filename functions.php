@@ -196,6 +196,45 @@ function get_lot(mysqli $link, string $id = ''): ?array
 }
 
 /**
+ * Получает на вход соединение с БД, id. Возвращает лот по id
+ * 
+ * @param mysqli $link  Ресурс соединения
+ * @param string $id  id лота
+ * 
+ * @return array|null лот
+ */
+function insert_lot(mysqli $link, string $title, string $category_id, string $description, string $img_url, string $start_price, string $bet_step, string $date_expire): void 
+{	
+	$lot_insert_sql = 
+		"INSERT INTO 
+			`lots`
+			(`title`, `category_id`, `description`, `img_url`, `start_price`, `bet_step`, `date_expire`)  
+		VALUES
+			(?, ?, ?, ?, ?, ?, ?)";
+
+	$stmt = db_get_prepare_stmt($link, $lot_insert_sql, [$title, $category_id, $description, $img_url, $start_price, $bet_step, $date_expire]);
+	mysqli_stmt_execute($stmt);
+	$result = mysqli_stmt_get_result($stmt);
+
+	   if ($result) {
+			$lot_id = mysqli_insert_id($link);
+
+            header("Location: lot.php?id=" . $lot_id);
+        }
+        else {
+			$error_page = include_template(
+				'404.php',
+				[
+					'categories' => $categories,
+					'page_title' => 'Yeticave - 404 not found'
+				 ]
+			);
+
+			echo $error_page;
+        }
+};
+
+/**
  * Получает на вход дату ставки и форматирует ее в соответствии с шаблоном
  * 
  * @param string $date  Дата в виде строки
