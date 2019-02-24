@@ -3,7 +3,7 @@ require_once 'db.php';
 require_once 'functions.php';
 
 $errors = [];
-$lot;
+$lot = null;
 $categories = get_categories($connection);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
