@@ -2,6 +2,8 @@
 require_once 'db.php';
 require_once 'functions.php';
 
+$errors = [];
+$lot;
 $categories = get_categories($connection);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -18,11 +20,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
 
     if (!count($errors)) {
-        $found_key = array_search($lot['category'], array_column($categories, 'name'));
         $lot_properties = 
         [
             'title' => $lot['title'], 
-            'category_id' => $categories[$found_key]['id'], 
+            'category_id' => $lot['category'], 
             'description' => $lot['description'], 
             'img_url' => $img_url, 
             'start_price' => $lot['start_price'], 
@@ -30,44 +31,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'date_expire' => $lot['date_expire'],
             'user_id' => 2
         ];
-        
         $lot_id = insert_lot($connection, $lot_properties);
         if (is_null($lot_id)) {
-            $error_page = include_template(
-				'404.php',
-				[
-					'categories' => $categories,
-					'page_title' => 'Yeticave - 404 not found'
-				 ]
-			);
-
-            echo $error_page;
+            echo 'Ошибка сохранения в БД';
             exit;
         } 
         else {
             header("Location: lot.php?id=" . $lot_id);
         } 
     }
-    else {
-        $add_page_errors = include_template(
-            'add-lot.php',
-            [
-                'categories' => $categories,
-                'errors' => $errors,
-                'lot' => $lot
-            ]
-        );
-        
-        echo $add_page_errors;
-    }
 }
-else {
-    $add_page = include_template(
-        'add-lot.php',
-        [
-            'categories' => $categories
-        ]
-    );
-    
-    echo $add_page;
-}
+
+$add_page = include_template(
+    'add-lot.php',
+    [
+        'categories' => $categories,
+        'errors' => $errors,
+        'lot' => $lot
+    ]
+);
+
+echo $add_page;

@@ -244,7 +244,6 @@ function insert_lot(mysqli $link, array $lot_info)
 		]
 	);
 	mysqli_stmt_execute($stmt);
-	$result = mysqli_stmt_get_result($stmt);
 
 	if (mysqli_insert_id($link)) {
 		return  mysqli_insert_id($link);
