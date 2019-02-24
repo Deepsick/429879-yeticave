@@ -4,7 +4,7 @@
 * @var string $is_auth Залогинен ли пользователь
 * @var string $user_name Имя пользователя
 * @var string $page_content Контент страницы
-* @var string[] $category_names Массив имен категорий
+* @var string[] $categories Массив категорий
 */
 ?>
 <!DOCTYPE html>
@@ -30,7 +30,7 @@
                     <input type="search" name="search" placeholder="Поиск лота">
                     <input class="main-header__search-btn" type="submit" name="find" value="Найти">
                 </form>
-                <a class="main-header__add-lot button" href="pages/add-lot.html">Добавить лот</a>
+                <a class="main-header__add-lot button" href="add.php">Добавить лот</a>
 
                 <nav class="user-menu">
                     <?php if ($user_info['is_auth'] === 1): ?>
