@@ -1,4 +1,6 @@
 <?php
+require_once 'mysql_helper.php';
+
 /**
  * Принимает на вход имя шаблона и данные для шаблона, возвращает html-код с подставленными данными.
  *
@@ -46,23 +48,25 @@ function format_number(string $number): string
  *
  * @param string $expiredAt Время экспирации лота
  * 
- * @return string Время до окончания дня в формате ЧЧ:ММ
+ * @return string Время до окончания торгов
  */
 function get_time_left(string $expiredAt = 'tomorrow'): string
 {
-	$seconds_left = strtotime($expiredAt) - time();
-	$hours_left = floor($seconds_left / 3600);
-	$minutes_left = floor(($seconds_left % 3600) / 60);
-
-	if ($hours_left < 10) {
-		$hours_left = 0 . $hours_left;
+	$minutes_in_hour = 60;
+	$seconds_in_minute = 60;
+	$hours_in_day = 24;
+	$left_minutes = (strtotime($expiredAt) - time()) / $seconds_in_minute;
+	if ($left_minutes >= ($hours_in_day * $minutes_in_hour)) {
+		return date('d.m.y в H:i', strtotime($expiredAt));
 	}
-
-	if ($minutes_left < 10) {
-		$minutes_left = 0 . $minutes_left;
+	elseif ($left_minutes >= $minutes_in_hour) {
+		return 'До конца торгов: ' . floor(($left_minutes / $minutes_in_hour)). ' ' . nounEnding(floor(($left_minutes / $minutes_in_hour)), ['час', 'часа', 'часов']);
+	} 
+	elseif ($left_minutes >= 1) {
+		return 'До конца торгов: ' . floor($left_minutes) . ' ' . nounEnding(floor($left_minutes), ['минута', 'минуты', 'минут']);
+	} else {
+		return 'прямо сейчас';
 	}
-
-	return $hours_left .':'. $minutes_left;
 }
 
 /**
@@ -175,7 +179,8 @@ function get_lot(mysqli $link, string $id = ''): ?array
 			`l`.`start_price`, 
 			`l`.`img_url`,
 			`l`.`description`,
-			`l`.`bet_step`, 
+			`l`.`bet_step`,
+			`l`.`date_expire`, 
 			`c`.`name` 
 		AS 
 			`category`
@@ -196,42 +201,56 @@ function get_lot(mysqli $link, string $id = ''): ?array
 }
 
 /**
- * Получает на вход соединение с БД, id. Возвращает лот по id
+ * Получает на вход соединение с БД, id. Возвращает id лота, отправленного в БД
  * 
  * @param mysqli $link  Ресурс соединения
- * @param string $id  id лота
+ * @param array $lot_info  массив данных о лоте
  * 
- * @return array|null лот
+ * @return number|string|null id лота
  */
-function insert_lot(mysqli $link, string $title, string $category_id, string $description, string $img_url, string $start_price, string $bet_step, string $date_expire): void 
+function insert_lot(mysqli $link, array $lot_info) 
 {	
+	extract($lot_info);
+
 	$lot_insert_sql = 
 		"INSERT INTO 
 			`lots`
-			(`title`, `category_id`, `description`, `img_url`, `start_price`, `bet_step`, `date_expire`)  
+			(
+				`title`, 
+				`category_id`, 
+				`description`, 
+				`img_url`, 
+				`start_price`, 
+				`bet_step`, 
+				`date_expire`,
+				`user_id`
+			)  
 		VALUES
-			(?, ?, ?, ?, ?, ?, ?)";
+			(?, ?, ?, ?, ?, ?, ?, ?)";
 
-	$stmt = db_get_prepare_stmt($link, $lot_insert_sql, [$title, $category_id, $description, $img_url, $start_price, $bet_step, $date_expire]);
+	$stmt = db_get_prepare_stmt
+	(
+		$link, 
+		$lot_insert_sql, 
+		[
+			$title, 
+			intval($category_id), 
+			$description, 
+			$img_url, 
+			intval($start_price), 
+			intval($bet_step), 
+			$date_expire,
+			intval($user_id)
+		]
+	);
 	mysqli_stmt_execute($stmt);
 	$result = mysqli_stmt_get_result($stmt);
 
-	   if ($result) {
-			$lot_id = mysqli_insert_id($link);
-
-            header("Location: lot.php?id=" . $lot_id);
-        }
-        else {
-			$error_page = include_template(
-				'404.php',
-				[
-					'categories' => $categories,
-					'page_title' => 'Yeticave - 404 not found'
-				 ]
-			);
-
-			echo $error_page;
-        }
+	if (mysqli_insert_id($link)) {
+		return  mysqli_insert_id($link);
+	}
+	
+	return null;
 };
 
 /**
@@ -248,7 +267,7 @@ function get_format_date(string $date): string
 	$hours_in_day = 24;
 	$passed_minutes = (time() - strtotime($date)) / $seconds_in_minute;
 	if ($passed_minutes >= ($hours_in_day * $minutes_in_hour)) {
-		return date('d:m:y H:i', strtotime($date));
+		return date('d.m.y в H:i', strtotime($date));
 	}
 	elseif ($passed_minutes >= $minutes_in_hour) {
 		return floor(($passed_minutes / $minutes_in_hour)). ' ' . nounEnding(floor(($passed_minutes / $minutes_in_hour)), ['час', 'часа', 'часов']);
@@ -288,4 +307,74 @@ function nounEnding(string $number, array $words = ['one', 'two', 'many']): stri
         default:
             return $words[2];
     }
+}
+
+/**
+ * Валидирует форму
+ * 
+ * @return array Возвращает массив ошибок
+ */
+function validate_form(): array 
+{
+	$required_fields = ['title', 'category', 'description', 'start_price', 'bet_step', 'date_expire'];
+
+    $errors = [];
+
+    foreach ($required_fields as $field) {
+		if (empty($_POST[$field])) {
+            $errors[$field] = 'Это поле надо заполнить';
+		}
+	}
+		
+    if ($_POST['start_price'] <= 0) {
+        $errors['start_price'] = 'Введите число больше нуля';
+    }
+
+    if ($_POST['bet_step'] <= 0) {
+        $errors['bet_step'] = 'Введите число больше нуля';
+	}
+
+	$date_format = 'Y-m-d';
+    if (!validate_date($_POST['date_expire'], $date_format)) {
+        $errors['date_expire'] = 'Введите дату в верном формате';
+	}
+	
+    if ($_POST['date_expire'] < date($date_format, strtotime('+1 day'))) {
+        $errors['date_expire'] = 'Дата должна быть больше текущей хотя бы на один день';
+    } 
+	
+	return $errors;
+}
+
+/**
+ * Если картинка есть, то перемещает в папку img и возвращает путь, иначе возвращает null
+ * 
+ * @return string|null Возвращает путь до картинки или null
+ */
+function check_file(): ?string
+{
+	$file_type = mime_content_type($_FILES['img_url']['tmp_name']);
+	$allowed_types = ['image/png', 'image/jpeg'];
+	if (!in_array($file_type, $allowed_types)) {
+		$errors['file'] = 'Загрузите картинку в формате png или jpeg';
+	}
+	else {
+		$file_path = __DIR__ . '/img/';
+		$img_url = $file_path . $_FILES['img_url']['name'];
+		move_uploaded_file($_FILES['img_url']['tmp_name'], $img_url);
+		return 'img/' . $_FILES['img_url']['name'];
+	}
+
+	return null;
+}
+
+/**
+ * Проверка на правильность формата даты
+ * 
+ * @return string true/false
+ */
+function validate_date(string $date, string $format): string 
+{  
+    $d = DateTime::createFromFormat($format, $date);
+    return $d && $d->format($format) === $date;
 }

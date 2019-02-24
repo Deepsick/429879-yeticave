@@ -1,3 +1,9 @@
+<?php
+/**
+* @var string[] $errors Массив ошибок
+* @var string[] $categories Массив имен категорий
+*/
+?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -44,32 +50,46 @@
         <?php endforeach; ?>
       </ul>
     </nav>
-    <form class="form form--add-lot container form--invalid" action="../add.php" method="post" enctype="multipart/form-data"> <!-- form--invalid -->
+    <?php  $classname = $errors !== null  ? "form--invalid" : "";?>
+    <form class="form form--add-lot container <?=$classname;?>" action="../add.php" method="post" enctype="multipart/form-data"> <!-- form--invalid -->
       <h2>Добавление лота</h2>
       <div class="form__container-two">
-        <div class="form__item form__item--invalid"> <!-- form__item--invalid -->
-        <?php $classname = isset($errors['lot-name']) ? "form__item--invalid " : "";
-          $value = isset($gif['title']) ? $gif['title'] : ""; ?>
+      <?php $classname = (isset($errors['title']) && !is_null($errors['title'])) ? "form__item--invalid" : "";
+      $value = isset($lot['title']) ? $lot['title'] : "";?>
+        <div class="form__item <?=$classname;?>"> <!-- form__item--invalid -->
           <label for="lot-name">Наименование</label>
-          <input id="lot-name" type="text" name="lot-name" placeholder="Введите наименование лота" required>
-          <span class="form__error">Введите наименование лота</span>
+          <input id="lot-name" type="text" name="title" placeholder="Введите наименование лота" value="<?=$value;?>" required>
+          <?php if ( isset($lot['title'])): ?> 
+            <span class="form__error"><?=$errors['title']; ?></span>
+          <?php endif; ?>
         </div>
-        <div class="form__item">
+        <?php $classname = (isset($errors['category']) && !is_null($errors['category'])) ? "form__item--invalid" : "";
+      $value = isset($lot['category']) ? $lot['category'] : "";?>
+        <div class="form__item <?=$classname;?>">
           <label for="category">Категория</label>
-          <select id="category" name="category" required>
+          <select id="category" name="category"  value="<?=$value;?>" required>
+                <option selected disabled>Выберите категорию</option>
             <?php foreach ($categories as $category): ?>
                 <option><?=$category['name']; ?></option>
             <?php endforeach; ?>
           </select>
-          <span class="form__error">Выберите категорию</span>
+          <?php if (isset($errors['category'])): ?> 
+            <span class="form__error"><?=$errors['category']; ?></span>
+          <?php endif; ?>
         </div>
       </div>
-      <div class="form__item form__item--wide">
+      <?php $classname = (isset($errors['description']) && !is_null($errors['description'])) ? "form__item--invalid" : "";
+      $value = isset($lot['description']) ? $lot['description'] : "";?>
+      <div class="form__item form__item--wide <?=$classname;?>">
         <label for="message">Описание</label>
-        <textarea id="message" name="message" placeholder="Напишите описание лота" required></textarea>
-        <span class="form__error">Напишите описание лота</span>
+        <textarea id="message" name="description" placeholder="Напишите описание лота"  value="<?=$value;?>" required></textarea>
+        <?php if ( isset($lot['description'])): ?> 
+            <span class="form__error"><?=$errors['description']; ?></span>
+          <?php endif; ?>
       </div>
-      <div class="form__item form__item--file"> <!-- form__item--uploaded -->
+      <?php $classname = (isset($errors['file']) && !is_null($errors['file'])) ? "form__item--invalid" : "";?>
+      <div class="form__item form__item--file <?=$classname;?>"> <!-- form__item--uploaded -->
+  
         <label>Изображение</label>
         <div class="preview">
           <button class="preview__remove" type="button">x</button>
@@ -78,30 +98,45 @@
           </div>
         </div>
         <div class="form__input-file">
-          <input class="visually-hidden" type="file" name="lot_img"  id="photo2" value="">
+          <input class="visually-hidden" type="file" name="img_url"  id="photo2" value="">
+      
           <label for="photo2">
             <span>+ Добавить</span>
           </label>
+          <?php if ( isset($errors['file'])): ?> 
+            <span class="form__error"><?=$errors['file']; ?></span>
+          <?php endif; ?>
         </div>
       </div>
       <div class="form__container-three">
-        <div class="form__item form__item--small">
+      <?php $classname = (isset($errors['start_price']) && !is_null($errors['start_price'])) ? "form__item--invalid" : "";
+      $value = isset($lot['start_price']) ? $lot['start_price'] : "";?>
+        <div class="form__item form__item--small <?=$classname;?>">
           <label for="lot-rate">Начальная цена</label>
-          <input id="lot-rate" type="number" name="lot-rate" placeholder="0" required>
-          <span class="form__error">Введите начальную цену</span>
+          <input id="lot-rate" type="number" name="start_price" placeholder="0" value="<?=$value;?>" required>
+          <?php if ( isset($lot['start_price'])): ?> 
+            <span class="form__error"><?=$errors['start_price']; ?></span>
+          <?php endif; ?>
         </div>
-        <div class="form__item form__item--small">
+        <?php $classname = (isset($errors['bet_step']) && !is_null($errors['bet_step'])) ? "form__item--invalid" : "";
+      $value = isset($lot['bet_step']) ? $lot['bet_step'] : "";?>
+        <div class="form__item form__item--small <?=$classname;?>">
           <label for="lot-step">Шаг ставки</label>
-          <input id="lot-step" type="number" name="lot-step" placeholder="0" required>
-          <span class="form__error">Введите шаг ставки</span>
+          <input id="lot-step" type="number" name="bet_step" placeholder="0" value="<?=$value;?>" required>
+          <?php if ( isset($lot['bet_step'])): ?> 
+            <span class="form__error"><?=$errors['bet_step']; ?></span>
+          <?php endif; ?>
         </div>
-        <div class="form__item">
+        <?php $classname = (isset($errors['date_expire']) && !is_null($errors['date_expire'])) ? "form__item--invalid" : "";
+      $value = isset($lot['date_expire']) ? $lot['date_expire'] : "";?>
+        <div class="form__item <?=$classname;?>">
           <label for="lot-date">Дата окончания торгов</label>
-          <input class="form__input-date" id="lot-date" type="date" name="lot-date" required>
-          <span class="form__error">Введите дату завершения торгов</span>
+          <input class="form__input-date" id="lot-date" type="date" name="date_expire" value="<?=$value;?>" required>
+          <?php if ( isset($lot['date_expire'])): ?> 
+            <span class="form__error"><?=$errors['date_expire']; ?></span>
+          <?php endif; ?>
         </div>
       </div>
-      <span class="form__error form__error--bottom">Пожалуйста, исправьте ошибки в форме.</span>
       <button type="submit" class="button">Добавить лот</button>
     </form>
   </main>

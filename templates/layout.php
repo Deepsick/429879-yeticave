@@ -4,7 +4,7 @@
 * @var string $is_auth Залогинен ли пользователь
 * @var string $user_name Имя пользователя
 * @var string $page_content Контент страницы
-* @var string[] $category_names Массив имен категорий
+* @var string[] $categories Массив категорий
 */
 ?>
 <!DOCTYPE html>
