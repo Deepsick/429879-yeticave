@@ -20,10 +20,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors['email'] = 'Пользователь с этим email уже зарегистрирован';
     }
 
-    if (check_username($connection, $user)) {
-        $errors['name'] = 'Пользователь с таким именем уже зарегистрирован';
-    }
-
     if (!count($errors)) {
         $user_properties = 
         [

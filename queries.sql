@@ -38,7 +38,6 @@ VALUES
 INSERT INTO `bets`
 (`price`, `user_id`,`lot_id`) 
 VALUES 
-(9000, 3, 4);
 (11000, 3, 4), 
 (15000, 1, 3), 
 (12000, 4, 3), 

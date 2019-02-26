@@ -325,30 +325,6 @@ function check_user(mysqli $link, array $user_info): bool
 }
 
 /**
- * Получает на вход соединение с БД и проверяет, есть ли такой никнейм.
- * 
- * @param mysqli $link  Ресурс соединения
- * @param array $user_info  Данные о пользователе из формы
- * 
- * @return string возвращает true, если такой ник уже есть, иначе false.
- */
-function check_username(mysqli $link, $user_info): string 
-{	
-	$usename = mysqli_real_escape_string($link, $user_info['name']);
-	$username_sql = 
-		"SELECT 
-			`id` 
-		FROM 
-			`users` 
-		WHERE 
-			`name` = '$usename'";
-
-	$res = mysqli_query($link, $username_sql);
-
-	return boolval(mysqli_num_rows($res));
-}
-
-/**
  * Получает на вход дату ставки и форматирует ее в соответствии с шаблоном
  * 
  * @param string $date  Дата в виде строки
