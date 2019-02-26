@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'start_price' => $lot['start_price'], 
             'bet_step' => $lot['bet_step'], 
             'date_expire' => $lot['date_expire'],
-            'user_id' => 2
+            'user_id' => $_SESSION['user']['id']
         ];
         $lot_id = insert_lot($connection, $lot_properties);
         if (is_null($lot_id)) {
