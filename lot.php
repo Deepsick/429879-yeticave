@@ -1,9 +1,11 @@
 <?php
+require_once 'session.php';
 require_once 'db.php';
 require_once 'functions.php';
 require_once 'mysql_helper.php';
 
 $categories = get_categories($connection);
+
 if (isset($_GET['id']) && $_GET['id'] !== '') {
     $lot = get_lot($connection, $_GET['id']);
 
@@ -15,7 +17,8 @@ if (isset($_GET['id']) && $_GET['id'] !== '') {
             [
                 'categories' => $categories,
                 'lot' => $lot,
-                'bets' => $bets
+                'bets' => $bets,
+                'user_info' => $user_info
             ]
         );
 

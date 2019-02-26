@@ -306,7 +306,7 @@ function insert_user(mysqli $link, array $user_info)
  * @param mysqli $link  Ресурс соединения
  * @param array $user_info  Данные о пользователе из формы
  * 
- * @return string возвращает true, если пользователь зарегистрирован, иначе false.
+ * @return bool возвращает true, если пользователь зарегистрирован, иначе false.
  */
 function check_user(mysqli $link, array $user_info): bool 
 {	
@@ -322,6 +322,47 @@ function check_user(mysqli $link, array $user_info): bool
 	$res = mysqli_query($link, $user_sql);
 
 	return boolval(mysqli_num_rows($res));
+}
+
+/**
+ * Получает на вход соединение с БД и возвращаем пользователя из БД, если он существует.
+ * 
+ * @param mysqli $link  Ресурс соединения
+ * @param array $login_info  Данные о пользователе из формы
+ * 
+ * @return array|null возвращает данные о пользователе из БД, если пользователь существует и ввел верные данные, иначе null.
+ */
+function check_user_login(mysqli $link, array $login_info): ?array 
+{	
+    $email = mysqli_real_escape_string($link, $login_info['email']);
+	$login_sql = 
+		"SELECT 
+			* 
+		FROM 
+			`users` 
+		WHERE 
+			`email` = '$email'";
+
+	$res = mysqli_query($link, $login_sql);
+
+	return $res ? mysqli_fetch_array($res, MYSQLI_ASSOC) : null;
+}
+
+/**
+ * Получает на вход данные из формы и проверяем, соответствует ли пароль БД.
+ * 
+ * @param array $login_info  Данные о пользователе из формы
+ * @param array $user  Данные о пользователе из БД
+ * 
+ * @return bool возвращает true, если пароль верный, иначе false.
+ */
+function check_user_password(array $login_info, array $user): bool 
+{	
+	if (password_verify($login_info['password'], $user['password'])) {
+		$_SESSION['user'] = $user;
+		return true;
+	}
+	return false;
 }
 
 /**
@@ -440,6 +481,33 @@ function validate_user_form(): array
 		
 	return $errors;
 }
+
+/**
+ * Валидирует форму входа
+ * 
+ * @param string[] $user_input  массив данных о пользователе
+ * 
+ * @return array Возвращает массив ошибок
+ */
+function validate_login_form($user_input): array 
+{
+	$required_fields = ['email', 'password'];
+
+    $errors = [];
+
+    foreach ($required_fields as $field) {
+		if (empty($_POST[$field])) {
+            $errors[$field] = 'Это поле надо заполнить';
+		}
+	}
+		
+    if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+        $errors['email'] = 'Введен некорректный email';
+	}
+		
+	return $errors;
+}
+
 
 /**
  * Если картинка есть, то перемещает в папку img и возвращает путь, иначе возвращает null

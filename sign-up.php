@@ -1,4 +1,5 @@
 <?php
+require_once 'session.php';
 require_once 'db.php';
 require_once 'functions.php';
 
@@ -35,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         } 
         else {
-            header("Location: /pages/login.html");
+            header("Location: login.php");
         } 
     }
 }

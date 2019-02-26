@@ -1,4 +1,11 @@
 <?php
+require_once 'session.php';
+
+if (!isset($_SESSION['user'])) {
+    http_response_code(403);
+    exit();
+}
+
 require_once 'db.php';
 require_once 'functions.php';
 
@@ -29,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'start_price' => $lot['start_price'], 
             'bet_step' => $lot['bet_step'], 
             'date_expire' => $lot['date_expire'],
-            'user_id' => 2
+            'user_id' => $_SESSION['user']['id']
         ];
         $lot_id = insert_lot($connection, $lot_properties);
         if (is_null($lot_id)) {
@@ -45,6 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $add_page = include_template(
     'add-lot.php',
     [
+        'page_title' => 'Добавление лота',
         'categories' => $categories,
         'errors' => $errors,
         'lot' => $lot
