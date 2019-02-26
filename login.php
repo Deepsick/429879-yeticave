@@ -2,9 +2,7 @@
 require_once 'session.php';
 require_once 'db.php';
 require_once 'functions.php';
-require_once 'user.php';
 
-$user_info = get_user_info();
 $errors = [];
 $login_info = null;
 $user = null;
@@ -38,8 +36,7 @@ $login_page = include_template(
         'page_title' => 'Вход',
         'categories' => $categories,
         'errors' => $errors,
-        'login_info' => $login_info,
-        'user_info' => $user_info
+        'login_info' => $login_info
     ]
 );
 

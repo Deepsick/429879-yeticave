@@ -8,9 +8,7 @@ if (!isset($_SESSION['user'])) {
 
 require_once 'db.php';
 require_once 'functions.php';
-require_once 'user.php';
 
-$user_info = get_user_info();
 $errors = [];
 $lot = null;
 $categories = get_categories($connection);
@@ -54,10 +52,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $add_page = include_template(
     'add-lot.php',
     [
+        'page_title' => 'Добавление лота',
         'categories' => $categories,
         'errors' => $errors,
-        'lot' => $lot,
-        'user_info' => $user_info
+        'lot' => $lot
     ]
 );
 

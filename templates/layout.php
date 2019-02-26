@@ -1,8 +1,7 @@
 <?php
 /**
 * @var string $page_title Заголовок страницы
-* @var string $is_auth Залогинен ли пользователь
-* @var string $user_name Имя пользователя
+* @var array $_SESSION Данные о сессии пользователя
 * @var string $page_content Контент страницы
 * @var string[] $categories Массив категорий
 */
@@ -12,7 +11,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title><?=$page_title ?></title>
+    <title><?=$page_title; ?></title>
     <link href="css/normalize.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
 </head>
@@ -33,10 +32,10 @@
                 <a class="main-header__add-lot button" href="add.php">Добавить лот</a>
 
                 <nav class="user-menu">
-                    <?php if ($user_info['is_auth'] === 1): ?>
+                    <?php if (isset($_SESSION['user'])): ?>
                         <ul class="user-menu__item user-menu__list">
                             <li class="user-menu__logged">
-                                <p><?=$user_info['user_name']; ?></p>
+                                <p><?=$_SESSION['user']['name'] ?></p>
                             </li>
                             <li class="user-menu__item">
                                 <a href="logout.php">Выход</a>
@@ -114,7 +113,7 @@
                     </svg>
                 </a>
             </div>
-            <a class="main-footer__add-lot button" href="add-lot.html">Добавить лот</a>
+            <a class="main-footer__add-lot button" href="add.php">Добавить лот</a>
             <div class="main-footer__developed-by">
                 <span class="visually-hidden">Разработано:</span>
                 <a class="logo-academy" href="https://htmlacademy.ru/intensive/php">

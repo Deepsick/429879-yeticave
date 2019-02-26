@@ -1,39 +1,17 @@
 <?php
 /**
+* @var string $page_title Заголовок страницы
+* @var array $_SESSION Данные о сессии пользователя
 * @var string[] $errors Массив ошибок
 * @var string[] $categories Массив имен категорий
 * @var array $lot Информация о лоте
 */
 ?>
-<?php
-$invalid_class = "form__item--invalid";
-$form_class = count($errors) ? "form--invalid" : "";
-
-$title_class = !empty($errors['title']) ? $invalid_class : "";
-$title_value = isset($lot['title']) ? $lot['title'] : "";
-
-$category_class = !empty($errors['category']) ? $invalid_class : "";
-$category_value = isset($lot['category']) ? $lot['category'] : "";
-
-$description_class = !empty($errors['description']) ? $invalid_class : "";
-$description_value = isset($lot['description']) ? $lot['description'] : "";
-
-$file_class = !empty($errors['file']) ? $invalid_class : "";
-
-$price_class = !empty($errors['start_price'])? $invalid_class : "";
-$price_value = isset($lot['start_price']) ? $lot['start_price'] : "";
-
-$bet_class = !empty($errors['bet_step']) ? $invalid_class : "";
-$bet_value = isset($lot['bet_step']) ? $lot['bet_step'] : "";
-
-$date_class = !empty($errors['date_expire']) ? $invalid_class : "";
-$date_value = isset($lot['date_expire']) ? $lot['date_expire'] : "";
-?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Добавление лота</title>
+  <title><?=$page_title; ?></title>
   <link href="css/normalize.min.css" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet">
 </head>
@@ -53,10 +31,10 @@ $date_value = isset($lot['date_expire']) ? $lot['date_expire'] : "";
     </form>
     <a class="main-header__add-lot button" href="add.php">Добавить лот</a>
     <nav class="user-menu">
-      <?php if ($user_info['is_auth'] === 1): ?>
+      <?php if (isset($_SESSION['user'])): ?>
           <ul class="user-menu__item user-menu__list">
               <li class="user-menu__logged">
-                  <p><?=$user_info['user_name']; ?></p>
+                  <p><?=$_SESSION['user']['name'] ?></p>
               </li>
               <li class="user-menu__item">
                   <a href="logout.php">Выход</a>
@@ -87,18 +65,26 @@ $date_value = isset($lot['date_expire']) ? $lot['date_expire'] : "";
       </ul>
     </nav>
 
-    <form class="form form--add-lot container <?=$form_class; ?>" action="../add.php" method="post" enctype="multipart/form-data">
+    <form class="form form--add-lot container <?=count($errors) ? "form--invalid" : ""; ?>" 
+          action="../add.php" 
+          method="post" 
+          enctype="multipart/form-data">
       <h2>Добавление лота</h2>
       <div class="form__container-two">
-        <div class="form__item <?=$title_class; ?>"> 
+        <div class="form__item <?=!empty($errors['title']) ? "form__item--invalid" : ""; ?>"> 
           <label for="lot-name">Наименование</label>
-          <input id="lot-name" type="text" name="title" placeholder="Введите наименование лота" value="<?=$title_value; ?>" required>
+          <input id="lot-name" 
+                 type="text" 
+                 name="title" 
+                 placeholder="Введите наименование лота" 
+                 value="<?=isset($lot['title']) ? $lot['title'] : ""; ?>" 
+                 required>
           <?php if (isset($lot['title'])): ?> 
             <span class="form__error"><?=$errors['title']; ?></span>
           <?php endif; ?>
         </div>
 
-        <div class="form__item <?=$category_class; ?>">
+        <div class="form__item <?=!empty($errors['category']) ? "form__item--invalid" : ""; ?>">
           <label for="category">Категория</label>
           <select id="category" name="category" required>
                 <option selected disabled>Выберите категорию</option>
@@ -117,15 +103,18 @@ $date_value = isset($lot['date_expire']) ? $lot['date_expire'] : "";
         </div>
       </div>
 
-      <div class="form__item form__item--wide <?=$description_class; ?>">
+      <div class="form__item form__item--wide <?=!empty($errors['description']) ? "form__item--invalid" : ""; ?>">
         <label for="message">Описание</label>
-        <textarea id="message" name="description" placeholder="Напишите описание лота" required><?=$description_value; ?></textarea>
+        <textarea id="message" 
+                  name="description" 
+                  placeholder="Напишите описание лота" 
+                  required><?=isset($lot['description']) ? $lot['description'] : ""; ?></textarea>
         <?php if (isset($lot['description'])): ?> 
             <span class="form__error"><?=$errors['description']; ?></span>
           <?php endif; ?>
       </div>
 
-      <div class="form__item form__item--file <?=$file_class; ?>"> 
+      <div class="form__item form__item--file <?=!empty($errors['file']) ? "form__item--invalid" : ""; ?>"> 
   
         <label>Изображение</label>
         <div class="preview">
@@ -147,25 +136,40 @@ $date_value = isset($lot['date_expire']) ? $lot['date_expire'] : "";
       </div>
       <div class="form__container-three">
 
-        <div class="form__item form__item--small <?=$price_class; ?>">
+        <div class="form__item form__item--small <?=!empty($errors['start_price'])? "form__item--invalid" : ""; ?>">
           <label for="lot-rate">Начальная цена</label>
-          <input id="lot-rate" type="number" name="start_price" placeholder="0" value="<?=$price_value; ?>" required>
+          <input id="lot-rate" 
+                 type="number" 
+                 name="start_price" 
+                 placeholder="0" 
+                 value="<?=isset($lot['start_price']) ? $lot['start_price'] : ""; ?>" 
+                 required>
           <?php if (isset($lot['start_price'])): ?> 
             <span class="form__error"><?=$errors['start_price']; ?></span>
           <?php endif; ?>
         </div>
 
-        <div class="form__item form__item--small <?=$bet_class; ?>">
+        <div class="form__item form__item--small <?=!empty($errors['bet_step']) ? "form__item--invalid" : ""; ?>">
           <label for="lot-step">Шаг ставки</label>
-          <input id="lot-step" type="number" name="bet_step" placeholder="0" value="<?=$bet_value; ?>" required>
+          <input id="lot-step" 
+                 type="number" 
+                 name="bet_step" 
+                 placeholder="0" 
+                 value="<?=isset($lot['bet_step']) ? $lot['bet_step'] : ""; ?>" 
+                 required>
           <?php if (isset($lot['bet_step'])): ?> 
             <span class="form__error"><?=$errors['bet_step']; ?></span>
           <?php endif; ?>
         </div>
 
-        <div class="form__item <?=$date_class; ?>">
+        <div class="form__item <?=!empty($errors['date_expire']) ? "form__item--invalid" : ""; ?>">
           <label for="lot-date">Дата окончания торгов</label>
-          <input class="form__input-date" id="lot-date" type="date" name="date_expire" value="<?=$date_value; ?>" required>
+          <input class="form__input-date" 
+                 id="lot-date" 
+                 type="date" 
+                 name="date_expire" 
+                 value="<?=isset($lot['date_expire']) ? $lot['date_expire'] : ""; ?>" 
+                 required>
           <?php if (isset($lot['date_expire'])): ?> 
             <span class="form__error"><?=$errors['date_expire']; ?></span>
           <?php endif; ?>
@@ -214,7 +218,7 @@ $date_value = isset($lot['date_expire']) ? $lot['date_expire'] : "";
         <svg width="27" height="27" viewBox="0 0 27 27" xmlns="http://www.w3.org/2000/svg"><circle stroke="#879296" fill="none" cx="13.5" cy="13.5" r="12.666"/><path fill="#879296" d="M13.92 18.07c.142-.016.278-.074.39-.166.077-.107.118-.237.116-.37 0 0 0-1.13.516-1.296.517-.165 1.208 1.09 1.95 1.58.276.213.624.314.973.28h1.95s.973-.057.525-.837c-.38-.62-.865-1.17-1.432-1.626-1.208-1.1-1.043-.916.41-2.816.886-1.16 1.236-1.86 1.13-2.163-.108-.302-.76-.214-.76-.214h-2.164c-.092-.026-.19-.026-.282 0-.083.058-.15.135-.195.225-.224.57-.49 1.125-.8 1.656-.973 1.61-1.344 1.697-1.51 1.59-.37-.234-.272-.975-.272-1.433 0-1.56.243-2.202-.468-2.377-.32-.075-.647-.108-.974-.098-.604-.052-1.213.01-1.793.186-.243.116-.438.38-.32.4.245.018.474.13.642.31.152.303.225.638.214.975 0 0 .127 1.832-.302 2.056-.43.223-.692-.167-1.55-1.618-.29-.506-.547-1.03-.77-1.57-.038-.09-.098-.17-.174-.233-.1-.065-.214-.108-.332-.128H6.485s-.312 0-.42.137c-.106.135 0 .36 0 .36.87 2 2.022 3.868 3.42 5.543.923.996 2.21 1.573 3.567 1.598z"/></svg>
       </a>
     </div>
-    <a class="main-footer__add-lot button" href="add-lot.html">Добавить лот</a>
+    <a class="main-footer__add-lot button" href="add.php">Добавить лот</a>
     <div class="main-footer__developed-by">
       <span class="visually-hidden">Разработано:</span>
       <a class="logo-academy" href="https://htmlacademy.ru/intensive/php">
