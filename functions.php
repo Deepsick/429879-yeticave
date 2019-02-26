@@ -325,12 +325,12 @@ function check_user(mysqli $link, array $user_info): bool
 }
 
 /**
- * Получает на вход соединение с БД и проверяем, зарегистрирован ли такой пользователь.
+ * Получает на вход соединение с БД и возвращаем пользователя из БД, если он существует.
  * 
  * @param mysqli $link  Ресурс соединения
  * @param array $login_info  Данные о пользователе из формы
  * 
- * @return array|null возвращает true, если пользователь существует и ввел верные данные, иначе false.
+ * @return array|null возвращает данные о пользователе из БД, если пользователь существует и ввел верные данные, иначе null.
  */
 function check_user_login(mysqli $link, array $login_info): ?array 
 {	
