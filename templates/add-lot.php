@@ -53,15 +53,26 @@ $date_value = isset($lot['date_expire']) ? $lot['date_expire'] : "";
     </form>
     <a class="main-header__add-lot button" href="add.php">Добавить лот</a>
     <nav class="user-menu">
-      <ul class="user-menu__list">
-        <li class="user-menu__item">
-          <a href="sign-up.php">Регистрация</a>
-        </li>
-        <li class="user-menu__item">
-          <a href="login.html">Вход</a>
-        </li>
-      </ul>
-    </nav>
+      <?php if ($user_info['is_auth'] === 1): ?>
+          <ul class="user-menu__item user-menu__list">
+              <li class="user-menu__logged">
+                  <p><?=$user_info['user_name']; ?></p>
+              </li>
+              <li class="user-menu__item">
+                  <a href="logout.php">Выход</a>
+              </li>
+          </ul>
+      <?php else: ?>
+          <ul class="user-menu__list">
+              <li class="user-menu__item">
+                  <a href="sign-up.php">Регистрация</a>
+              </li>
+              <li class="user-menu__item">
+                  <a href="login.php">Вход</a>
+              </li>
+          </ul>
+      <?php endif; ?>
+  </nav>
   </div>
 </header>
 

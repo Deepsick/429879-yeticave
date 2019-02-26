@@ -1,4 +1,6 @@
 <?php
+require_once 'session.php';
+
 date_default_timezone_set('Europe/Moscow');
 
 require_once 'db.php';
@@ -16,7 +18,6 @@ $index_content = include_template(
         'ads' => $lots
     ]
 );
-
 $index_page = include_template(
     'layout.php',
     [

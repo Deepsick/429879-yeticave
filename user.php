@@ -7,7 +7,7 @@
 function get_user_info(): array
 {
     return [
-        'is_auth' => 0,
-        'user_name' => 'Артем',
+        'is_auth' => isset($_SESSION['user']) ? 1 : 0,
+        'user_name' => isset($_SESSION['user']) ? $_SESSION['user']['name'] : 'Аноним',
     ];
 }

@@ -1,7 +1,16 @@
 <?php
+require_once 'session.php';
+
+if (!isset($_SESSION['user'])) {
+    http_response_code(403);
+    exit();
+}
+
 require_once 'db.php';
 require_once 'functions.php';
+require_once 'user.php';
 
+$user_info = get_user_info();
 $errors = [];
 $lot = null;
 $categories = get_categories($connection);
@@ -47,7 +56,8 @@ $add_page = include_template(
     [
         'categories' => $categories,
         'errors' => $errors,
-        'lot' => $lot
+        'lot' => $lot,
+        'user_info' => $user_info
     ]
 );
 

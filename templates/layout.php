@@ -34,18 +34,23 @@
 
                 <nav class="user-menu">
                     <?php if ($user_info['is_auth'] === 1): ?>
-                    <div class="user-menu__logged">
-                        <p><?=$user_info['user_name']; ?></p>
-                    </div>
+                        <ul class="user-menu__item user-menu__list">
+                            <li class="user-menu__logged">
+                                <p><?=$user_info['user_name']; ?></p>
+                            </li>
+                            <li class="user-menu__item">
+                                <a href="logout.php">Выход</a>
+                            </li>
+                        </ul>
                     <?php else: ?>
-                    <ul class="user-menu__list">
-                        <li class="user-menu__item">
-                            <a href="sign-up.php">Регистрация</a>
-                        </li>
-                        <li class="user-menu__item">
-                            <a href="#">Вход</a>
-                        </li>
-                    </ul>
+                        <ul class="user-menu__list">
+                            <li class="user-menu__item">
+                                <a href="sign-up.php">Регистрация</a>
+                            </li>
+                            <li class="user-menu__item">
+                                <a href="login.php">Вход</a>
+                            </li>
+                        </ul>
                     <?php endif; ?>
                 </nav>
             </div>

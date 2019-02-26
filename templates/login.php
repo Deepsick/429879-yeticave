@@ -2,7 +2,7 @@
 /**
 * @var string[] $errors Массив ошибок
 * @var string[] $categories Массив имен категорий
-* @var array $user Информация о пользователе
+* @var array $login_info Информация о пользователе
 */
 ?>
 <?php
@@ -10,25 +10,17 @@ $invalid_class = "form__item--invalid";
 $form_class = count($errors) ? "form--invalid" : "";
 
 $email_class = !empty($errors['email']) ? $invalid_class : "";
-$email_value = isset($user['email']) ? $user['email'] : "";
+$email_value = isset($login_info['email']) ? $login_info['email'] : "";
 
 $password_class = !empty($errors['password']) ? $invalid_class : "";
-
-$name_class = !empty($errors['name']) ? $invalid_class : "";
-$name_value = isset($user['name']) ? $user['name'] : "";
-
-$file_class = !empty($errors['file']) ? $invalid_class : "";
-
-$contacts_class = !empty($errors['contacts'])? $invalid_class : "";
-$contacts_value = isset($user['contacts']) ? $user['contacts'] : "";
 ?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title><?=$page_title;  ?></title>
-  <link href="../css/normalize.min.css" rel="stylesheet">
-  <link href="../css/style.css" rel="stylesheet">
+  <title><?=$page_title; ?></title>
+  <link href="css/normalize.min.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
 </head>
 <body>
 
@@ -44,92 +36,58 @@ $contacts_value = isset($user['contacts']) ? $user['contacts'] : "";
         <input type="search" name="search" placeholder="Поиск лота">
         <input class="main-header__search-btn" type="submit" name="find" value="Найти">
       </form>
-      <a class="main-header__add-lot button" href="add.php">Добавить лот</a>
-      <nav class="user-menu">
-        <?php if ($user_info['is_auth'] === 1): ?>
-            <ul class="user-menu__item user-menu__list">
-                <li class="user-menu__logged">
-                    <p><?=$user_info['user_name']; ?></p>
-                </li>
-                <li class="user-menu__item">
-                    <a href="logout.php">Выход</a>
-                </li>
-            </ul>
-        <?php else: ?>
-            <ul class="user-menu__list">
-                <li class="user-menu__item">
-                    <a href="sign-up.php">Регистрация</a>
-                </li>
-                <li class="user-menu__item">
-                    <a href="login.php">Вход</a>
-                </li>
-            </ul>
-        <?php endif; ?>
-    </nav>
+      <a class="main-header__add-lot button" href="add-lot.html">Добавить лот</a>
+        <nav class="user-menu">
+            <?php if ($user_info['is_auth'] === 1): ?>
+                <ul class="user-menu__item user-menu__list">
+                    <li class="user-menu__logged">
+                        <p><?=$user_info['user_name']; ?></p>
+                    </li>
+                    <li class="user-menu__item">
+                        <a href="logout.php">Выход</a>
+                    </li>
+                </ul>
+            <?php else: ?>
+                <ul class="user-menu__list">
+                    <li class="user-menu__item">
+                        <a href="sign-up.php">Регистрация</a>
+                    </li>
+                    <li class="user-menu__item">
+                        <a href="login.php">Вход</a>
+                    </li>
+                </ul>
+            <?php endif; ?>
+        </nav>
     </div>
   </header>
 
   <main>
     <nav class="nav">
       <ul class="nav__list container">
-      <?php foreach ($categories as $category): ?>
+        <?php foreach ($categories as $category): ?>
             <li class="nav__item">
                 <a href="all-lots.html"><?=$category['name']; ?></a>
             </li>
         <?php endforeach; ?>
       </ul>
     </nav>
-    <form class="form container <?=$form_class; ?>" action="../sign-up.php" method="post" enctype="multipart/form-data">
-      <h2>Регистрация нового аккаунта</h2>
+    <form class="form container <?=$form_class; ?>" action="../login.php" method="post">
+      <h2>Вход</h2>
       <div class="form__item <?=$email_class; ?>"> 
         <label for="email">E-mail*</label>
         <input id="email" type="email" name="email" placeholder="Введите e-mail" value="<?=$email_value; ?>" required>
-        <?php if (isset($user['email'])): ?> 
+        <?php if (isset($login_info['email'])): ?> 
             <span class="form__error"><?=$errors['email']; ?></span>
         <?php endif; ?>
-        <?php if (isset($user['user'])): ?> 
-            <span class="form__error"><?=$errors['user']; ?></span>
-        <?php endif; ?>
       </div>
-      <div class="form__item <?=$password_class; ?>">
+      <div class="form__item form__item--last <?=$password_class; ?>">
         <label for="password">Пароль*</label>
         <input id="password" type="password" name="password" placeholder="Введите пароль" required>
-        <?php if (isset($user['password'])): ?> 
+        <?php if (isset($login_info['password'])): ?> 
             <span class="form__error"><?=$errors['password']; ?></span>
         <?php endif; ?>
       </div>
-      <div class="form__item <?=$name_class; ?>">
-        <label for="name">Имя*</label>
-        <input id="name" type="text" name="name" placeholder="Введите имя" value="<?=$name_value; ?>"  required>
-        <?php if (isset($user['name'])): ?> 
-            <span class="form__error"><?=$errors['name']; ?></span>
-        <?php endif; ?>
-      </div>
-      <div class="form__item <?=$contacts_class; ?>">
-        <label for="message">Контактные данные*</label>
-        <textarea id="message" name="contacts" placeholder="Напишите как с вами связаться" required><?=$contacts_value; ?></textarea>
-        <?php if (isset($user['contacts'])): ?> 
-            <span class="form__error"><?=$errors['contacts']; ?></span>
-        <?php endif; ?>
-      </div>
-      <div class="form__item form__item--file form__item--last <?=$file_class; ?>">
-        <label>Аватар</label>
-        <div class="preview">
-          <button class="preview__remove" type="button">x</button>
-          <div class="preview__img">
-            <img src="img/avatar.jpg" width="113" height="113" alt="Ваш аватар">
-          </div>
-        </div>
-        <div class="form__input-file">
-          <input class="visually-hidden" type="file" name="avatar_url" id="photo2">
-          <label for="photo2">
-            <span>+ Добавить</span>
-          </label>
-        </div>
-      </div>
-      <span class="form__error form__error--bottom">Пожалуйста, исправьте ошибки в форме.</span>
-      <button type="submit" class="button">Зарегистрироваться</button>
-      <a class="text-link" href="#">Уже есть аккаунт</a>
+      <button type="submit" class="button">Войти</button>
     </form>
   </main>
 
@@ -140,7 +98,7 @@ $contacts_value = isset($user['contacts']) ? $user['contacts'] : "";
     <ul class="nav__list container">
         <?php foreach ($categories as $category): ?>
             <li class="nav__item">
-                <a href="all-lots.html"><?=$category['name'];  ?></a>
+                <a href="all-lots.html"><?=$category['name']; ?></a>
             </li>
         <?php endforeach; ?>
     </ul>

@@ -1,7 +1,10 @@
 <?php
+require_once 'session.php';
 require_once 'db.php';
 require_once 'functions.php';
+require_once 'user.php';
 
+$user_info = get_user_info();
 $errors = [];
 $user = null;
 $img_url = null;
@@ -35,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         } 
         else {
-            header("Location: /pages/login.html");
+            header("Location: login.php");
         } 
     }
 }
@@ -46,7 +49,8 @@ $sign_up_page = include_template(
         'page_title' => 'Регистрация',
         'categories' => $categories,
         'errors' => $errors,
-        'user' => $user
+        'user' => $user,
+        'user_info' => $user_info
     ]
 );
 
