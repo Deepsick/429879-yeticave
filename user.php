@@ -7,7 +7,7 @@
 function get_user_info(): array
 {
     return [
-        'is_auth' => rand(0, 1),
+        'is_auth' => 0,
         'user_name' => 'Артем',
     ];
 }

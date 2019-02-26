@@ -250,7 +250,79 @@ function insert_lot(mysqli $link, array $lot_info)
 	}
 	
 	return null;
-};
+}
+
+/**
+ * Получает на вход соединение с БД. Возвращает id пользователя, отправленного в БД
+ * 
+ * @param mysqli $link  Ресурс соединения
+ * @param array $user_info  массив данных о пользователе
+ * 
+ * @return number|string|null id пользователя
+ */
+function insert_user(mysqli $link, array $user_info) 
+{	
+	extract($user_info);
+	$hashed_password = password_hash($password, PASSWORD_DEFAULT);
+	$user_insert_sql = 
+		"INSERT INTO 
+			`users`
+			(
+				`date_register`,
+				`name`, 
+				`email`, 
+				`password`, 
+				`contacts`, 
+				`avatar_url`
+			)  
+		VALUES
+			(NOW(), ?, ?, ?, ?, ?)";
+
+	$stmt = db_get_prepare_stmt
+	(
+		$link, 
+		$user_insert_sql, 
+		[
+			$name, 
+			$email, 
+			$hashed_password, 
+			$contacts,  
+			$avatar_url
+		]
+	);
+
+	mysqli_stmt_execute($stmt);
+
+	if (mysqli_insert_id($link)) {
+		return  mysqli_insert_id($link);
+	}
+	
+	return null;
+}
+
+/**
+ * Получает на вход соединение с БД и проверяет, зарегистрирован ли такой пользователь.
+ * 
+ * @param mysqli $link  Ресурс соединения
+ * @param array $user_info  Данные о пользователе из формы
+ * 
+ * @return string возвращает true, если пользователь зарегистрирован, иначе false.
+ */
+function check_user(mysqli $link, array $user_info): bool 
+{	
+	$email = mysqli_real_escape_string($link, $user_info['email']);
+	$user_sql = 
+		"SELECT 
+			`id` 
+		FROM 
+			`users` 
+		WHERE 
+			`email` = '$email'";
+
+	$res = mysqli_query($link, $user_sql);
+
+	return boolval(mysqli_num_rows($res));
+}
 
 /**
  * Получает на вход дату ставки и форматирует ее в соответствии с шаблоном
@@ -346,6 +418,30 @@ function validate_form(): array
 }
 
 /**
+ * Валидирует форму регистрации
+ * 
+ * @return array Возвращает массив ошибок
+ */
+function validate_user_form(): array 
+{
+	$required_fields = ['email', 'password', 'name', 'contacts'];
+
+    $errors = [];
+
+    foreach ($required_fields as $field) {
+		if (empty($_POST[$field])) {
+            $errors[$field] = 'Это поле надо заполнить';
+		}
+	}
+		
+    if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+        $errors['email'] = 'Введен некорректный email';
+	}
+		
+	return $errors;
+}
+
+/**
  * Если картинка есть, то перемещает в папку img и возвращает путь, иначе возвращает null
  * 
  * @return string|null Возвращает путь до картинки или null
@@ -368,7 +464,32 @@ function check_file(): ?string
 }
 
 /**
+ * Если аватар есть, то перемещает в папку img и возвращает путь, иначе возвращает null
+ * 
+ * @return string|null Возвращает путь до аватара или null
+ */
+function check_avatar(): ?string
+{
+	$file_type = mime_content_type($_FILES['avatar_url']['tmp_name']);
+	$allowed_types = ['image/png', 'image/jpeg'];
+	if (!in_array($file_type, $allowed_types)) {
+		$errors['file'] = 'Загрузите картинку в формате png или jpeg';
+	}
+	else {
+		$file_path = __DIR__ . '/img/';
+		$img_url = $file_path . $_FILES['avatar_url']['name'];
+		move_uploaded_file($_FILES['avatar_url']['tmp_name'], $img_url);
+		return 'img/' . $_FILES['avatar_url']['name'];
+	}
+
+	return null;
+}
+
+/**
  * Проверка на правильность формата даты
+ * 
+ * @param string $date  Дата
+ * @param string $format  формат, на соответствие которого проверяется дата
  * 
  * @return string true/false
  */
