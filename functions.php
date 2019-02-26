@@ -253,12 +253,12 @@ function insert_lot(mysqli $link, array $lot_info)
 }
 
 /**
- * Получает на вход соединение с БД, id. Возвращает id лота, отправленного в БД
+ * Получает на вход соединение с БД. Возвращает id пользователя, отправленного в БД
  * 
  * @param mysqli $link  Ресурс соединения
- * @param array $lot_info  массив данных о лоте
+ * @param array $user_info  массив данных о пользователе
  * 
- * @return number|string|null id лота
+ * @return number|string|null id пользователя
  */
 function insert_user(mysqli $link, array $user_info) 
 {	
@@ -304,12 +304,13 @@ function insert_user(mysqli $link, array $user_info)
  * Получает на вход соединение с БД и проверяет, зарегистрирован ли такой пользователь.
  * 
  * @param mysqli $link  Ресурс соединения
+ * @param array $user_info  Данные о пользователе из формы
  * 
  * @return string возвращает true, если пользователь зарегистрирован, иначе false.
  */
-function check_user(mysqli $link): string 
+function check_user(mysqli $link, array $user_info): bool 
 {	
-	$email = mysqli_real_escape_string($link, $user['email']);
+	$email = mysqli_real_escape_string($link, $user_info['email']);
 	$user_sql = 
 		"SELECT 
 			`id` 
@@ -327,12 +328,13 @@ function check_user(mysqli $link): string
  * Получает на вход соединение с БД и проверяет, есть ли такой никнейм.
  * 
  * @param mysqli $link  Ресурс соединения
+ * @param array $user_info  Данные о пользователе из формы
  * 
  * @return string возвращает true, если такой ник уже есть, иначе false.
  */
-function check_username(mysqli $link): string 
+function check_username(mysqli $link, $user_info): string 
 {	
-	$usename = mysqli_real_escape_string($link, $user['name']);
+	$usename = mysqli_real_escape_string($link, $user_info['name']);
 	$username_sql = 
 		"SELECT 
 			`id` 

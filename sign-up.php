@@ -4,6 +4,7 @@ require_once 'functions.php';
 
 $errors = [];
 $user = null;
+$img_url = null;
 $categories = get_categories($connection);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -15,11 +16,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 		$img_url = check_avatar();
 	} 
     
-    if (check_user($connection)) {
-        $errors['user'] = 'Пользователь с этим email уже зарегистрирован';
+    if (check_user($connection, $user)) {
+        $errors['email'] = 'Пользователь с этим email уже зарегистрирован';
     }
 
-    if (check_username($connection)) {
+    if (check_username($connection, $user)) {
         $errors['name'] = 'Пользователь с таким именем уже зарегистрирован';
     }
 
@@ -32,7 +33,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'contacts' => $user['contacts'], 
             'avatar_url' => $img_url
         ];
-
         $user_id = insert_user($connection, $user_properties);
         if (is_null($user_id)) {
             echo 'Ошибка сохранения в БД';
