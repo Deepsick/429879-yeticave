@@ -306,7 +306,7 @@ function insert_user(mysqli $link, array $user_info)
  * @param mysqli $link  Ресурс соединения
  * @param array $user_info  Данные о пользователе из формы
  * 
- * @return string возвращает true, если пользователь зарегистрирован, иначе false.
+ * @return bool возвращает true, если пользователь зарегистрирован, иначе false.
  */
 function check_user(mysqli $link, array $user_info): bool 
 {	
@@ -354,7 +354,7 @@ function check_user_login(mysqli $link, array $login_info): ?array
  * @param array $login_info  Данные о пользователе из формы
  * @param array $user  Данные о пользователе из БД
  * 
- * @return string возвращает true, если пароль верный, иначе false.
+ * @return bool возвращает true, если пароль верный, иначе false.
  */
 function check_user_password(array $login_info, array $user): bool 
 {	
