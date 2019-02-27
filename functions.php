@@ -139,6 +139,7 @@ function get_bets (mysqli $link, string $id = ''): array
 		"SELECT 
 			`b`.`price`,
 			`b`.date_create,
+			`b`.`user_id`,
 			`u`.`name` AS `user_name`
 		FROM 
 			`lots` `l`
@@ -181,6 +182,7 @@ function get_lot(mysqli $link, string $id = ''): ?array
 			`l`.`description`,
 			`l`.`bet_step`,
 			`l`.`date_expire`, 
+			`l`.`user_id`,
 			`c`.`name` 
 		AS 
 			`category`
@@ -301,6 +303,50 @@ function insert_user(mysqli $link, array $user_info)
 }
 
 /**
+ * Получает на вход соединение с БД. Возвращает id ставки, отправленной в БД
+ * 
+ * @param mysqli $link  Ресурс соединения
+ * @param array $bet_properties  массив данных о ставке
+ * 
+ * @return number|string|null id пользователя
+ */
+function insert_bet(mysqli $link, array $bet_properties)
+{	
+	extract($bet_properties);
+
+	$bet_insert_sql = 
+		"INSERT INTO 
+			`bets`
+			(
+				`date_create`,
+				`price`, 
+				`user_id`, 
+				`lot_id`
+			)  
+		VALUES
+			(NOW(), ?, ?, ?)";
+
+	$stmt = db_get_prepare_stmt
+	(
+		$link, 
+		$bet_insert_sql, 
+		[
+			$price, 
+			$user_id, 
+			$lot_id
+		]
+	);
+
+	mysqli_stmt_execute($stmt);
+
+	if (mysqli_insert_id($link)) {
+		return  mysqli_insert_id($link);
+	}
+	
+	return null;
+}
+
+/**
  * Получает на вход соединение с БД и проверяет, зарегистрирован ли такой пользователь.
  * 
  * @param mysqli $link  Ресурс соединения
@@ -322,6 +368,44 @@ function check_user(mysqli $link, array $user_info): bool
 	$res = mysqli_query($link, $user_sql);
 
 	return boolval(mysqli_num_rows($res));
+}
+
+/**
+ * Получает на вход соединение с БД и возвращает лоты по названию и описанию.
+ * 
+ * @param mysqli $link  Ресурс соединения
+ * @param array $search_request  Поисковый запрос
+ * 
+ * @return array массив лотов
+ */
+function search_lots($link, $search_request, int $page_items, int $offset): array
+{
+	$search_sql = 
+		"SELECT 
+			`l`.`id`, 
+			`l`.`title`, 
+			`l`.`img_url`, 
+			`l`.`date_expire`, 
+			`l`.`start_price`, 
+			`c`.`name` 
+		FROM 
+			`lots` `l`  
+		JOIN 
+			`categories` `c`
+		ON 
+			`c`.`id` = `l`.`category_id` 
+		WHERE 
+			MATCH(`title`, `description`) AGAINST(?)
+		ORDER BY 
+			`l`.`date_create` 
+		DESC 
+		LIMIT " . $page_items . ' OFFSET ' . $offset;
+
+	$stmt = db_get_prepare_stmt($link, $search_sql, [$search_request]);
+	mysqli_stmt_execute($stmt);
+	$result = mysqli_stmt_get_result($stmt);
+
+	return mysqli_fetch_all($result, MYSQLI_ASSOC);
 }
 
 /**

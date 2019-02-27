@@ -2,9 +2,11 @@
 /**
 * @var string $page_title Заголовок страницы
 * @var array $_SESSION Данные о сессии пользователя
-* @var string[] $errors Массив ошибок
-* @var string[] $categories Массив имен категорий
-* @var array $login_info Информация о пользователе
+* @var array $categories Массив категорий
+* @var string $search Поисковый запрос
+* @var array $lots лоты
+* @var number $pages_count Количество страниц
+* @var array $pages Массив страниц
 */
 ?>
 <!DOCTYPE html>
@@ -26,62 +28,90 @@
         <img src="img/logo.svg" width="160" height="39" alt="Логотип компании YetiCave">
       </a>
       <form class="main-header__search" method="get" action="search.php">
-        <input type="search" name="search" placeholder="Поиск лота">
+        <input type="search" name="search" placeholder="Поиск лота" value="<?=isset($search) ? $search : ''; ?>">
         <input class="main-header__search-btn" type="submit" name="find" value="Найти">
       </form>
-      <a class="main-header__add-lot button" href="add-lot.html">Добавить лот</a>
-        <nav class="user-menu">
-            <?php if (isset($_SESSION['user'])): ?>
-                <ul class="user-menu__item user-menu__list">
-                    <li class="user-menu__logged">
-                        <p><?=$_SESSION['user']['name'] ?></p>
-                    </li>
-                    <li class="user-menu__item">
-                        <a href="logout.php">Выход</a>
-                    </li>
-                </ul>
-            <?php else: ?>
-                <ul class="user-menu__list">
-                    <li class="user-menu__item">
-                        <a href="sign-up.php">Регистрация</a>
-                    </li>
-                    <li class="user-menu__item">
-                        <a href="login.php">Вход</a>
-                    </li>
-                </ul>
-            <?php endif; ?>
-        </nav>
+      <a class="main-header__add-lot button" href="add.php">Добавить лот</a>
+      <nav class="user-menu">
+        <?php if (isset($_SESSION['user'])): ?>
+            <ul class="user-menu__item user-menu__list">
+                <li class="user-menu__logged">
+                    <p><?=$_SESSION['user']['name'] ?></p>
+                </li>
+                <li class="user-menu__item">
+                    <a href="logout.php">Выход</a>
+                </li>
+            </ul>
+        <?php else: ?>
+            <ul class="user-menu__list">
+                <li class="user-menu__item">
+                    <a href="sign-up.php">Регистрация</a>
+                </li>
+                <li class="user-menu__item">
+                    <a href="login.php">Вход</a>
+                </li>
+            </ul>
+        <?php endif; ?>
+      </nav>
     </div>
   </header>
 
   <main>
     <nav class="nav">
       <ul class="nav__list container">
-        <?php foreach ($categories as $category): ?>
+      <?php foreach ($categories as $category): ?>
             <li class="nav__item">
                 <a href="all-lots.html"><?=$category['name']; ?></a>
             </li>
         <?php endforeach; ?>
       </ul>
     </nav>
-    <form class="form container <?=count($errors) ? "form--invalid" : ""; ?>" action="../login.php" method="post">
-      <h2>Вход</h2>
-      <div class="form__item <?=!empty($errors['email']) ? "form__item--invalid" : ""; ?>"> 
-        <label for="email">E-mail*</label>
-        <input id="email" type="email" name="email" placeholder="Введите e-mail" value="<?=isset($login_info['email']) ? $login_info['email'] : ""; ?>" required>
-        <?php if (isset($login_info['email'])): ?> 
-            <span class="form__error"><?=$errors['email']; ?></span>
-        <?php endif; ?>
-      </div>
-      <div class="form__item form__item--last <?=!empty($errors['password']) ? "form__item--invalid" : ""; ?>">
-        <label for="password">Пароль*</label>
-        <input id="password" type="password" name="password" placeholder="Введите пароль" required>
-        <?php if (isset($login_info['password'])): ?> 
-            <span class="form__error"><?=$errors['password']; ?></span>
-        <?php endif; ?>
-      </div>
-      <button type="submit" class="button">Войти</button>
-    </form>
+    <div class="container">
+      <section class="lots">
+        <h2>Результаты поиска по запросу «<span><?=$search; ?></span>»</h2>
+        <ul class="lots__list">
+            <?php if (count($lots)): ?>
+                <?php foreach($lots as $lot): ?>
+                    <li class="lots__item lot">
+                        <div class="lot__image">
+                        <img src="<?=$lot['img_url'] ?>" width="350" height="260" alt="<?=$lot['title']; ?>">
+                        </div>
+                        <div class="lot__info">
+                        <span class="lot__category"><?=$lot['category']; ?></span>
+                        <h3 class="lot__title"><a class="text-link" href="lot.php?id=<?=$lot['id']; ?>"><?=$lot['title']; ?></a></h3>
+                        <div class="lot__state">
+                            <div class="lot__rate">
+                            <span class="lot__amount">Стартовая цена</span>
+                            <span class="lot__cost"><?=$lot['start_price']; ?><b class="rub">р</b></span>
+                            </div>
+                            <div class="lot__timer timer">
+                            <?=get_time_left($lot['date_expire']);  ?>
+                            </div>
+                        </div>
+                        </div>
+                    </li>
+                <?php endforeach; ?>       
+            <?php else: ?>
+                <li>Ничего не найдено по вашему запросу</li>   
+            <?php endif; ?>
+        </ul>
+      </section>
+      <?php if ($pages_count > 1): ?>
+        <ul class="pagination-list">
+            <li class="pagination-item pagination-item-prev">
+                    <a href="/?page=<?=intval($page)-1 ;?>">Назад</a>
+            </li>
+            <?php foreach ($pages as $page): ?>
+                <li class="pagination-item <?php ($page == $cur_page) ? 'pagination__item--active' : '' ?>">
+                    <a href="search.php?search=<?=$search; ?>&find=Найти&page=<?=$page;?>"><?=$page;?></a>
+                </li>
+            <?php endforeach; ?>
+            <li class="pagination-item pagination-item-next">
+                <a href="/?page=<?=intval($page)+1 ;?>">Вперед</a>
+            </li>
+        </ul>
+      <?php endif; ?>
+    </div>
   </main>
 
 </div>

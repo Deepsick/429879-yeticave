@@ -4,7 +4,14 @@
 * @var array $categories Массив категорий
 * @var array $lot лот
 * @var array $bets Массив ставок
+* @var string[] $errors Массив ошибок
+* @var number $bet_price Цена ставки
 */
+$is_bet_placed = count(array_filter($bets, function ($bet) 
+{ 
+  return intval($bet['user_id']) === intval($_SESSION['user']['id']); 
+}
+));
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -24,7 +31,7 @@
       <a class="main-header__logo" href="index.php">
         <img src="img/logo.svg" width="160" height="39" alt="Логотип компании YetiCave">
       </a>
-      <form class="main-header__search" method="get" action="https://echo.htmlacademy.ru">
+      <form class="main-header__search" method="get" action="search.php">
         <input type="search" name="search" placeholder="Поиск лота">
         <input class="main-header__search-btn" type="submit" name="find" value="Найти">
       </form>
@@ -74,7 +81,11 @@
        <p class="lot-item__description"><?=$lot['description']; ?></p>
      </div>
      <div class="lot-item__right">
-       <?php if (isset($_SESSION['user'])): ?>
+       <?php if (isset($_SESSION['user']) 
+                 && !(intval($_SESSION['user']['id']) === intval($lot['user_id'])) 
+                 && !(strtotime($lot['date_expire']) <= time())
+                 && !$is_bet_placed
+              ): ?>
           <div class="lot-item__state">
             <div class="lot-item__timer timer">
                 <?=get_time_left($lot['date_expire']);  ?>
@@ -88,10 +99,13 @@
                 Мин. ставка <span><?=format_number(($bets[0]['price'] ?? $lot['start_price']) + $lot['bet_step']);  ?></span>
               </div>
             </div>
-            <form class="lot-item__form" action="https://echo.htmlacademy.ru" method="post">
-              <p class="lot-item__form-item form__item form__item--invalid">
+            <form class="lot-item__form <?=count($errors) ? "form--invalid" : ""; ?>" action="lot.php?id=<?=$lot['id']; ?>" method="post">
+              <p class="lot-item__form-item form__item <?=!empty($errors['bet_price']) ? "form__item--invalid" : ""; ?>">
                 <label for="cost">Ваша ставка</label>
-                <input id="cost" type="text" name="cost" placeholder="<?=($bets[0]['price'] ?? $lot['start_price']) + $lot['bet_step'];?>">
+                <input id="cost" type="number" name="bet_price" placeholder="<?=($bets[0]['price'] ?? $lot['start_price']) + $lot['bet_step'];?>" value="<?=isset($bet_price) ? $bet_price : ""; ?>" required>
+                <?php if (isset($bet_price)): ?> 
+                  <span class="form__error"><?=$errors['bet_price']; ?></span>
+                <?php endif; ?>
               </p>
               <button type="submit" class="button">Сделать ставку</button>
             </form>
