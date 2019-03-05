@@ -38,6 +38,9 @@
                                 <p><?=$_SESSION['user']['name'] ?></p>
                             </li>
                             <li class="user-menu__item">
+                                <a href="my-bets.php">Мои ставки</a>
+                            </li>
+                            <li class="user-menu__item">
                                 <a href="logout.php">Выход</a>
                             </li>
                         </ul>
@@ -65,7 +68,7 @@
             <ul class="nav__list container">
                 <?php foreach ($categories as $category): ?>
                 <li class="nav__item">
-                    <a href="pages/all-lots.html"><?=$category['name']; ?></a>
+                    <a href="category.php?id=<?=$category['id']; ?>"><?=$category['name']; ?></a>
                 </li>
                 <?php endforeach; ?>
             </ul>

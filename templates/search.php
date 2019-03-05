@@ -61,7 +61,7 @@
       <ul class="nav__list container">
       <?php foreach ($categories as $category): ?>
             <li class="nav__item">
-                <a href="all-lots.html"><?=$category['name']; ?></a>
+                <a href="category.php?id=<?=$category['id']; ?>"><?=$category['name']; ?></a>
             </li>
         <?php endforeach; ?>
       </ul>
@@ -81,11 +81,11 @@
                         <h3 class="lot__title"><a class="text-link" href="lot.php?id=<?=$lot['id']; ?>"><?=$lot['title']; ?></a></h3>
                         <div class="lot__state">
                             <div class="lot__rate">
-                            <span class="lot__amount">Стартовая цена</span>
-                            <span class="lot__cost"><?=$lot['start_price']; ?><b class="rub">р</b></span>
+                            <span class="lot__amount"><?=$lot['bets_amount'] . ' ' . nounEnding(strval($lot['bets_amount']), ['ставка', 'ставки', 'ставок']); ?></span>                            
+                            <span class="lot__cost"><?=htmlspecialchars(format_number($lot['max_price'] ?? $lot['start_price'])); ?> </span>
                             </div>
                             <div class="lot__timer timer">
-                            <?=get_time_left($lot['date_expire']);  ?>
+                            <?=get_short_time_left($lot['date_expire']);  ?>
                             </div>
                         </div>
                         </div>
@@ -98,17 +98,21 @@
       </section>
       <?php if ($pages_count > 1): ?>
         <ul class="pagination-list">
-            <li class="pagination-item pagination-item-prev">
-                    <a href="/?page=<?=intval($page)-1 ;?>">Назад</a>
-            </li>
+            <? if (intval($cur_page) !== 1): ?>
+              <li class="pagination-item pagination-item-prev">
+                  <a href="search.php?search=<?=$search; ?>&find=Найти&page=<?=intval($cur_page)-1; ?>">Назад</a>
+              </li>
+            <? endif; ?>
             <?php foreach ($pages as $page): ?>
-                <li class="pagination-item <?php ($page == $cur_page) ? 'pagination__item--active' : '' ?>">
+                <li class="pagination-item <?php echo (intval($page) === intval($cur_page)) ? 'pagination-item-active' : '' ?>">
                     <a href="search.php?search=<?=$search; ?>&find=Найти&page=<?=$page;?>"><?=$page;?></a>
                 </li>
             <?php endforeach; ?>
-            <li class="pagination-item pagination-item-next">
-                <a href="/?page=<?=intval($page)+1 ;?>">Вперед</a>
-            </li>
+            <? if (intval($cur_page) !== intval(end($pages))): ?>
+              <li class="pagination-item pagination-item-next">
+                  <a href="search.php?search=<?=$search; ?>&find=Найти&page=<?=intval($cur_page)+1; ?>">Вперед</a>
+              </li>
+            <? endif; ?>
         </ul>
       <?php endif; ?>
     </div>
@@ -121,7 +125,7 @@
     <ul class="nav__list container">
         <?php foreach ($categories as $category): ?>
             <li class="nav__item">
-                <a href="all-lots.html"><?=$category['name']; ?></a>
+                <a href="category.php?id=<?=$category['id']; ?>"><?=$category['name']; ?></a>
             </li>
         <?php endforeach; ?>
     </ul>

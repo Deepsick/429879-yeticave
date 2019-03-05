@@ -2,13 +2,12 @@
 require_once 'session.php';
 require_once 'db.php';
 require_once 'functions.php';
-require_once 'mysql_helper.php';
 
 $categories = get_categories($connection);
 $bets = null;
 $lot = null;
 $bet_price = null;
-
+$is_form_shown = null;
 
 if (isset($_GET['id']) && $_GET['id'] !== '') {
     $lot = get_lot($connection, $_GET['id']);
@@ -26,6 +25,18 @@ if (isset($_GET['id']) && $_GET['id'] !== '') {
     } 
     else {
         $bets = get_bets($connection, $_GET['id']);
+
+        $is_bet_placed = count(array_filter($bets, function ($bet) 
+        { 
+            return intval($bet['user_id']) === intval($_SESSION['user']['id']); 
+        }
+        ));
+
+
+        $is_form_shown = isset($_SESSION['user']) 
+                         && !(intval($_SESSION['user']['id']) === intval($lot['user_id'])) 
+                         && !(strtotime($lot['date_expire']) <= time())
+                         && !$is_bet_placed;
     }
 }
 
@@ -37,6 +48,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $lot = get_lot($connection, $_REQUEST['id']);
     $bets = get_bets($connection, $_REQUEST['id']);
     
+    $is_bet_placed = count(array_filter($bets, function ($bet) 
+    { 
+        return intval($bet['user_id']) === intval($_SESSION['user']['id']); 
+    }
+    ));
+
+
+    $is_form_shown = isset($_SESSION['user']) 
+                     && !(intval($_SESSION['user']['id']) === intval($lot['user_id'])) 
+                     && !(strtotime($lot['date_expire']) <= time())
+                     && !$is_bet_placed;
+    
     if (empty($_POST['bet_price'])) {
         $errors['bet_price'] = 'Это поле надо заполнить';
     }
@@ -45,8 +68,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors['bet_price'] = 'Ставка должна быть целым положительным числом'; 
     }
 
-    if ($bet_price <= (($bets[0]['price'] ??  $lot['start_price']) + $lot['bet_step'])) {
-        $errors['bet_price'] = 'Ставка должна быть больше цены лота с прибавленным шагом'; 
+    if ($bet_price < (($bets[0]['price'] ??  $lot['start_price']) + $lot['bet_step'])) {
+        $errors['bet_price'] = 'Минимальная ставка - ' . (($bets[0]['price'] ??  $lot['start_price']) + $lot['bet_step']); 
     }
 
     if (!count($errors)) {
@@ -75,7 +98,8 @@ $lot_page = include_template(
         'lot' => $lot,
         'bets' => $bets,
         'errors' => $errors,
-        'bet_price' => $bet_price
+        'bet_price' => $bet_price,
+        'is_form_shown' => $is_form_shown
     ]
 );
 

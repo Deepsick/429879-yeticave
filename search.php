@@ -5,30 +5,19 @@ require_once 'functions.php';
 
 $categories = get_categories($connection);
 $lots = null;
+$pages_count = null;
+$cur_page = null;
+$pages = null;
+$search = null;
 
-if (isset($_GET['search']) && $_GET['search'] !== '') {
+if (isset($_GET['search']) && $_GET['search'] !== '' && strlen($_GET['search']) >= 3) {
     $search = trim($_GET['search']) ?? '';
     
     if ($search) {
         $cur_page = $_GET['page'] ?? 1;
         $page_items = 9;
-    
-        $result = mysqli_query(
-            $connection, 
-            "SELECT 
-                COUNT(*) 
-            AS 
-                count 
-            FROM 
-                `lots` `l`  
-            JOIN 
-                `categories` `c`
-            ON 
-                `c`.`id` = `l`.`category_id`;"
-        );
-    
-        $items_count = mysqli_fetch_assoc($result)['count'];
-    
+          
+        $items_count = search_count_of_lots($connection, $search);
         $pages_count = ceil($items_count / $page_items);
         $offset = ($cur_page - 1) * $page_items;
     

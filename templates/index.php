@@ -2,6 +2,7 @@
 /**
 * @var array $categories Массив имен категорий
 * @var array $ads Массив лотов
+* @var array $bets Массив ставок
 */
 ?>
 <section class="promo">
@@ -11,7 +12,7 @@
     <ul class="promo__list">
         <?php foreach ($categories as $category): ?>
         <li class="promo__item promo__item--boards">
-            <a class="promo__link" href="pages/all-lots.html"><?=$category['name']; ?></a>
+            <a class="promo__link" href="category.php?id=<?=$category['id']; ?>"><?=$category['name']; ?></a>
         </li>
         <?php endforeach; ?>
     </ul>
@@ -33,10 +34,10 @@
                 <div class="lot__state">
                     <div class="lot__rate">
                         <span class="lot__amount">Стартовая цена</span>
-                        <span class="lot__cost"><?=htmlspecialchars(format_number($ad['start_price'])); ?></span>
+                        <span class="lot__cost"><?=htmlspecialchars(format_number($ad['max_price'] ?? $ad['start_price'])); ?></span>
                     </div>
                     <div class="lot__timer timer">
-                        <?=get_time_left();  ?>
+                        <?=get_short_time_left($ad['date_expire']);  ?>
                     </div>
                 </div>
             </div>
