@@ -41,5 +41,7 @@ CREATE TABLE `users` (
 `contacts` VARCHAR(255) NOT NULL
 );
 
+CREATE FULLTEXT INDEX lot_ft_search
+ON lots(title, description);
 
  

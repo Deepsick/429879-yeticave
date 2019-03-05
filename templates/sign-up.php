@@ -41,7 +41,7 @@ $contacts_value = isset($user['contacts']) ? $user['contacts'] : "";
       <a class="main-header__logo" href="index.php">
         <img src="img/logo.svg" width="160" height="39" alt="Логотип компании YetiCave">
       </a>
-      <form class="main-header__search" method="get" action="https://echo.htmlacademy.ru">
+      <form class="main-header__search" method="get" action="search.php">
         <input type="search" name="search" placeholder="Поиск лота">
         <input class="main-header__search-btn" type="submit" name="find" value="Найти">
       </form>
@@ -75,7 +75,7 @@ $contacts_value = isset($user['contacts']) ? $user['contacts'] : "";
       <ul class="nav__list container">
       <?php foreach ($categories as $category): ?>
             <li class="nav__item">
-                <a href="all-lots.html"><?=$category['name']; ?></a>
+                <a href="category.php?id=<?=$category['id']; ?>"><?=$category['name']; ?></a>
             </li>
         <?php endforeach; ?>
       </ul>
@@ -141,7 +141,7 @@ $contacts_value = isset($user['contacts']) ? $user['contacts'] : "";
     <ul class="nav__list container">
         <?php foreach ($categories as $category): ?>
             <li class="nav__item">
-                <a href="all-lots.html"><?=$category['name'];  ?></a>
+                <a href="category.php?id=<?=$category['id']; ?>"><?=$category['name'];  ?></a>
             </li>
         <?php endforeach; ?>
     </ul>

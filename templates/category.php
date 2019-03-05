@@ -1,17 +1,8 @@
-<?php
-/**
-* @var string $page_title Заголовок страницы
-* @var array $_SESSION Данные о сессии пользователя
-* @var string[] $errors Массив ошибок
-* @var string[] $categories Массив имен категорий
-* @var array $lot Информация о лоте
-*/
-?>
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title><?=$page_title; ?></title>
+  <title><?=$category['name'] ?></title>
   <link href="css/normalize.min.css" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet">
 </head>
@@ -20,163 +11,100 @@
 <div class="page-wrapper">
 
   <header class="main-header">
-  <div class="main-header__container container">
-    <h1 class="visually-hidden">YetiCave</h1>
-    <a class="main-header__logo" href="index.php">
-      <img src="img/logo.svg" width="160" height="39" alt="Логотип компании YetiCave">
-    </a>
-    <form class="main-header__search" method="get" action="search.php">
-      <input type="search" name="search" placeholder="Поиск лота">
-      <input class="main-header__search-btn" type="submit" name="find" value="Найти">
-    </form>
-    <a class="main-header__add-lot button" href="add.php">Добавить лот</a>
-    <nav class="user-menu">
-      <?php if (isset($_SESSION['user'])): ?>
-          <ul class="user-menu__item user-menu__list">
-              <li class="user-menu__logged">
-                  <p><?=$_SESSION['user']['name'] ?></p>
-              </li>
-              <li class="user-menu__item">
-                  <a href="logout.php">Выход</a>
-              </li>
-          </ul>
-      <?php else: ?>
-          <ul class="user-menu__list">
-              <li class="user-menu__item">
-                  <a href="sign-up.php">Регистрация</a>
-              </li>
-              <li class="user-menu__item">
-                  <a href="login.php">Вход</a>
-              </li>
-          </ul>
-      <?php endif; ?>
-  </nav>
-  </div>
-</header>
+    <div class="main-header__container container">
+      <h1 class="visually-hidden">YetiCave</h1>
+      <a class="main-header__logo" href="index.php">
+        <img src="img/logo.svg" width="160" height="39" alt="Логотип компании YetiCave">
+      </a>
+      <form class="main-header__search" method="get" action="search.php">
+        <input type="search" name="search" placeholder="Поиск лота">
+        <input class="main-header__search-btn" type="submit" name="find" value="Найти">
+      </form>
+      <a class="main-header__add-lot button" href="add-lot.php">Добавить лот</a>
+      <nav class="user-menu">
+            <?php if (isset($_SESSION['user'])): ?>
+                <ul class="user-menu__item user-menu__list">
+                    <li class="user-menu__logged">
+                        <p><?=$_SESSION['user']['name'] ?></p>
+                    </li>
+                    <li class="user-menu__item">
+                        <a href="logout.php">Выход</a>
+                    </li>
+                </ul>
+            <?php else: ?>
+                <ul class="user-menu__list">
+                    <li class="user-menu__item">
+                        <a href="sign-up.php">Регистрация</a>
+                    </li>
+                    <li class="user-menu__item">
+                        <a href="login.php">Вход</a>
+                    </li>
+                </ul>
+            <?php endif; ?>
+      </nav>
+    </div>
+  </header>
 
   <main>
     <nav class="nav">
       <ul class="nav__list container">
-        <?php foreach ($categories as $category): ?>
+        <?php foreach ($categories as $category_item): ?>
             <li class="nav__item">
-                <a href="category.php?id=<?=$category['id']; ?>"><?=$category['name']; ?></a>
+            <a href="category.php?id=<?=$category_item['id']; ?>"><?=$category_item['name']; ?></a>
             </li>
-        <?php endforeach; ?>
+        <?php endforeach; ?>    
       </ul>
     </nav>
-
-    <form class="form form--add-lot container <?=count($errors) ? "form--invalid" : ""; ?>" 
-          action="../add.php" 
-          method="post" 
-          enctype="multipart/form-data">
-      <h2>Добавление лота</h2>
-      <div class="form__container-two">
-        <div class="form__item <?=!empty($errors['title']) ? "form__item--invalid" : ""; ?>"> 
-          <label for="lot-name">Наименование</label>
-          <input id="lot-name" 
-                 type="text" 
-                 name="title" 
-                 placeholder="Введите наименование лота" 
-                 value="<?=isset($lot['title']) ? $lot['title'] : ""; ?>" 
-                 required>
-          <?php if (isset($lot['title'])): ?> 
-            <span class="form__error"><?=$errors['title']; ?></span>
-          <?php endif; ?>
-        </div>
-
-        <div class="form__item <?=!empty($errors['category']) ? "form__item--invalid" : ""; ?>">
-          <label for="category">Категория</label>
-          <select id="category" name="category" required>
-                <option selected disabled>Выберите категорию</option>
-            <?php foreach ($categories as $category): ?>
-                <option 
-                  value="<?=$category['id']; ?>" 
-                  <?php echo (intval($lot['category']) === intval($category['id'])) ? 'selected="true"' : '';  ?>
-                >
-                  <?=$category['name']; ?>
-                </option>
+    <div class="container">
+      <section class="lots">
+        <h2>Все лоты в категории <span><?=$category['name']; ?></span></h2>
+        <?php if (count($lots)): ?>
+            <ul class="lots__list">
+                <?php foreach ($lots as $lot): ?>
+                    <li class="lots__item lot">
+                        <div class="lot__image">
+                        <img src="<?=$lot['img_url']; ?>" width="350" height="260" alt="<?=$lot['category']; ?>">
+                        </div>
+                        <div class="lot__info">
+                        <span class="lot__category"><?=$category['name']; ?></span>
+                        <h3 class="lot__title"><a class="text-link" href="lot.php?id=<?=$lot['id']; ?>"><?=$lot['title']; ?></a></h3>
+                        <div class="lot__state">
+                            <div class="lot__rate">
+                            <span class="lot__amount">Стартовая цена</span>
+                            <span class="lot__cost"><?=htmlspecialchars(format_number($lot['max_price'] ?? $lot['start_price'])); ?></span>
+                            </div>
+                            <div class="lot__timer timer">
+                                <?=get_short_time_left($lot['date_expire']);  ?>
+                            </div>
+                        </div>
+                        </div>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php else: ?>
+            <h1>Нет лотов в данной категории</h1>
+        <?php endif; ?>
+      </section>
+      <?php if ($pages_count > 1): ?>
+        <ul class="pagination-list">
+            <? if (intval($cur_page) !== 1): ?>
+              <li class="pagination-item pagination-item-prev">
+                <a href="category.php?id=<?=$category['id']; ?>&page=<?=intval($cur_page)-1 ;?>">Назад</a>
+              </li>
+            <?php endif; ?>
+            <?php foreach ($pages as $page): ?>
+                <li class="pagination-item <?php echo (intval($page) === intval($cur_page)) ? 'pagination-item-active' : '' ?>">
+                    <a href="category.php?id=<?=$category['id']; ?>&page=<?=$page;?>"><?=$page;?></a>
+                </li>
             <?php endforeach; ?>
-          </select>
-          <?php if (isset($errors['category'])): ?> 
-            <span class="form__error"><?=$errors['category']; ?></span>
-          <?php endif; ?>
-        </div>
-      </div>
-
-      <div class="form__item form__item--wide <?=!empty($errors['description']) ? "form__item--invalid" : ""; ?>">
-        <label for="message">Описание</label>
-        <textarea id="message" 
-                  name="description" 
-                  placeholder="Напишите описание лота" 
-                  required><?=isset($lot['description']) ? $lot['description'] : ""; ?></textarea>
-        <?php if (isset($lot['description'])): ?> 
-            <span class="form__error"><?=$errors['description']; ?></span>
-          <?php endif; ?>
-      </div>
-
-      <div class="form__item form__item--file <?=!empty($errors['file']) ? "form__item--invalid" : ""; ?>"> 
-  
-        <label>Изображение</label>
-        <div class="preview">
-          <button class="preview__remove" type="button">x</button>
-          <div class="preview__img">
-            <img src="img/avatar.jpg" width="113" height="113" alt="Изображение лота">
-          </div>
-        </div>
-        <div class="form__input-file">
-          <input class="visually-hidden" type="file" name="img_url"  id="photo2" value="">
-      
-          <label for="photo2">
-            <span>+ Добавить</span>
-          </label>
-          <?php if (isset($errors['file'])): ?> 
-            <span class="form__error"><?=$errors['file']; ?></span>
-          <?php endif; ?>
-        </div>
-      </div>
-      <div class="form__container-three">
-
-        <div class="form__item form__item--small <?=!empty($errors['start_price'])? "form__item--invalid" : ""; ?>">
-          <label for="lot-rate">Начальная цена</label>
-          <input id="lot-rate" 
-                 type="number" 
-                 name="start_price" 
-                 placeholder="0" 
-                 value="<?=isset($lot['start_price']) ? $lot['start_price'] : ""; ?>" 
-                 required>
-          <?php if (isset($lot['start_price'])): ?> 
-            <span class="form__error"><?=$errors['start_price']; ?></span>
-          <?php endif; ?>
-        </div>
-
-        <div class="form__item form__item--small <?=!empty($errors['bet_step']) ? "form__item--invalid" : ""; ?>">
-          <label for="lot-step">Шаг ставки</label>
-          <input id="lot-step" 
-                 type="number" 
-                 name="bet_step" 
-                 placeholder="0" 
-                 value="<?=isset($lot['bet_step']) ? $lot['bet_step'] : ""; ?>" 
-                 required>
-          <?php if (isset($lot['bet_step'])): ?> 
-            <span class="form__error"><?=$errors['bet_step']; ?></span>
-          <?php endif; ?>
-        </div>
-
-        <div class="form__item <?=!empty($errors['date_expire']) ? "form__item--invalid" : ""; ?>">
-          <label for="lot-date">Дата окончания торгов</label>
-          <input class="form__input-date" 
-                 id="lot-date" 
-                 type="date" 
-                 name="date_expire" 
-                 value="<?=isset($lot['date_expire']) ? $lot['date_expire'] : ""; ?>" 
-                 required>
-          <?php if (isset($lot['date_expire'])): ?> 
-            <span class="form__error"><?=$errors['date_expire']; ?></span>
-          <?php endif; ?>
-        </div>
-      </div>
-      <button type="submit" class="button">Добавить лот</button>
-    </form>
+            <? if (intval($cur_page) !== intval(end($pages))): ?>
+              <li class="pagination-item pagination-item-next">
+                  <a href="category.php?id=<?=$category['id']; ?>&page=<?=intval($cur_page)+1 ;?>">Вперед</a>
+              </li>
+            <?php endif; ?>
+        </ul>
+      <?php endif; ?>
+    </div>
   </main>
 
 </div>
@@ -184,11 +112,11 @@
 <footer class="main-footer">
   <nav class="nav">
     <ul class="nav__list container">
-      <?php foreach ($categories as $category): ?>
-        <li class="nav__item">
-          <a href="category.php?id=<?=$category['id']; ?>"><?=$category['name'];  ?></a>
-        </li>
-      <?php endforeach; ?>
+        <?php foreach ($categories as $category_item): ?>
+            <li class="nav__item">
+                <a href="category.php?id=<?=$category_item['id']; ?>"><?=$category_item['name']; ?></a>
+            </li>
+        <?php endforeach; ?>
     </ul>
   </nav>
   <div class="main-footer__bottom container">
@@ -218,7 +146,7 @@
         <svg width="27" height="27" viewBox="0 0 27 27" xmlns="http://www.w3.org/2000/svg"><circle stroke="#879296" fill="none" cx="13.5" cy="13.5" r="12.666"/><path fill="#879296" d="M13.92 18.07c.142-.016.278-.074.39-.166.077-.107.118-.237.116-.37 0 0 0-1.13.516-1.296.517-.165 1.208 1.09 1.95 1.58.276.213.624.314.973.28h1.95s.973-.057.525-.837c-.38-.62-.865-1.17-1.432-1.626-1.208-1.1-1.043-.916.41-2.816.886-1.16 1.236-1.86 1.13-2.163-.108-.302-.76-.214-.76-.214h-2.164c-.092-.026-.19-.026-.282 0-.083.058-.15.135-.195.225-.224.57-.49 1.125-.8 1.656-.973 1.61-1.344 1.697-1.51 1.59-.37-.234-.272-.975-.272-1.433 0-1.56.243-2.202-.468-2.377-.32-.075-.647-.108-.974-.098-.604-.052-1.213.01-1.793.186-.243.116-.438.38-.32.4.245.018.474.13.642.31.152.303.225.638.214.975 0 0 .127 1.832-.302 2.056-.43.223-.692-.167-1.55-1.618-.29-.506-.547-1.03-.77-1.57-.038-.09-.098-.17-.174-.233-.1-.065-.214-.108-.332-.128H6.485s-.312 0-.42.137c-.106.135 0 .36 0 .36.87 2 2.022 3.868 3.42 5.543.923.996 2.21 1.573 3.567 1.598z"/></svg>
       </a>
     </div>
-    <a class="main-footer__add-lot button" href="add.php">Добавить лот</a>
+    <a class="main-footer__add-lot button" href="add-lot.php">Добавить лот</a>
     <div class="main-footer__developed-by">
       <span class="visually-hidden">Разработано:</span>
       <a class="logo-academy" href="https://htmlacademy.ru/intensive/php">

@@ -44,9 +44,9 @@ VALUES
 (13000, 2, 2), 
 (14000, 6, 5),
 (14000, 6, 1),
+(15000, 3, 2),
 (15000, 3, 1),
-(15000, 3, 1),
-(15000, 3, 1);
+(15000, 3, 3);
 
 CREATE INDEX lot_title ON `lots`(`title`);
 CREATE INDEX start_price ON `lots`(`start_price`);
@@ -86,8 +86,104 @@ ON `b`.`lot_id` = `l`.`id`
 WHERE `l`.`id` = 1
 ORDER BY `b`.`date_create` DESC;
 
+-- Полнотекстовый поиск лотов
+SELECT 
+			`l`.`id`, 
+			`l`.`title`, 
+			`l`.`img_url`, 
+			`l`.`date_expire`,
+            `l`.`description`,
+			`l`.`start_price`, 
+			MAX(`b`.`price`) AS `max_price`,
+			`c`.`name` 
+		FROM 
+			`lots` `l`
+		LEFT JOIN 
+			`bets` `b`
+		ON 
+			`l`.`id` = `b`.`lot_id`  
+		JOIN 
+			`categories` `c`
+		ON 
+			`c`.`id` = `l`.`category_id` 
+		WHERE 
+			MATCH(`title`, `description`) AGAINST('csadsfdsaads')
+             GROUP BY
+             `l`.`id`
+		ORDER BY 
+			`l`.`date_create` 
+		DESC
+        LIMIT 2
+        OFFSET 0;
 
- 
 
+-- Показываем категорию по id
+SELECT 
+			`c`.`name`, 
+			`c`.`id` 
+		FROM 
+			`categories` `c`
+		WHERE 
+			`c`.`id` = 3;
 
+-- Показываем свежие лоты по id категории
+SELECT 
+			`l`.`title`,
+			`l`.`id`,
+			`l`.`date_create`,
+			`l`.`date_expire`,
+			`l`.`img_url`,
+			`l`.`start_price`,
+			MAX(`b`.`price`) AS `max_price`,
+			`c`.`name` AS `category`
+		FROM 
+			`lots` `l`
+		LEFT JOIN 
+			`bets` `b`
+		ON 
+			`l`.`id` = `b`.`lot_id`  
+		JOIN 
+			`categories` `c`
+		ON 
+			`c`.`id` = `l`.`category_id`
+		WHERE 
+			`l`.`category_id` = 2
+		AND 
+			`l`.`date_expire` > NOW()
+		GROUP BY
+		 	`l`.`id` 	
+		ORDER BY 
+			`l`.`date_create` DESC;
+            
+-- Получаем количество ставок по id лота
+SELECT COUNT(*) FROM `bets` `b` WHERE `b`.`lot_id` = 16;
 
+-- Получаем все ставки пользователя
+SELECT 
+	`b`.`id`, 
+    `b`.`price`, 
+    `b`.`date_create`, 
+    `l`.`title` AS `lot_title`,
+    `l`.`img_url` AS `lot_img_url`,
+    `l`.`id` AS `lot_id`,
+    `l`.`winner_id`,
+    `l`.`date_expire` AS `lot_expire`,
+    `c`.`name` AS `category`,
+    `u`.`contacts`,
+    `u`.`name` 
+FROM
+	`bets` `b`
+JOIN 
+	`lots` `l`
+ON
+	`l`.`id` = `b`.`lot_id`
+JOIN
+	`categories` `c`
+ON
+	`l`.`category_id` = `c`.`id`
+JOIN 
+	`users` `u`
+ON
+	`u`.`id` = `b`.`user_id`
+WHERE 
+	`b`.`user_id` = 8;

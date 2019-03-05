@@ -70,6 +70,32 @@ function get_time_left(string $expiredAt = 'tomorrow'): string
 }
 
 /**
+ * Возвращает оставшееся время до начала следующего дня.
+ *
+ * @param string $expiredAt Время экспирации лота
+ * 
+ * @return string Время до окончания торгов
+ */
+function get_short_time_left(string $expiredAt = 'tomorrow'): string
+{
+	$minutes_in_hour = 60;
+	$seconds_in_minute = 60;
+	$hours_in_day = 24;
+	$left_minutes = (strtotime($expiredAt) - time()) / $seconds_in_minute;
+	if ($left_minutes >= ($hours_in_day * $minutes_in_hour)) {
+		return date('d.m.y', strtotime($expiredAt));
+	}
+	elseif ($left_minutes >= $minutes_in_hour) {
+		return floor(($left_minutes / $minutes_in_hour)). ' ' . nounEnding(floor(($left_minutes / $minutes_in_hour)), ['час', 'часа', 'часов']);
+	} 
+	elseif ($left_minutes >= 1) {
+		return floor($left_minutes) . ' ' . nounEnding(floor($left_minutes), ['минута', 'минуты', 'минут']);
+	} else {
+		return 'сейчас';
+	}
+}
+
+/**
  * Получает на вход соединение с БД. Возвращает массив лотов
  * 
  * @param mysqli $link  Ресурс соединения
@@ -84,6 +110,7 @@ function get_lots (mysqli $link): array
 			`l`.`title`, 
 			`l`.`start_price`, 
 			`l`.`img_url`,
+			`l`.`date_expire`,
 			MAX(`b`.`price`) AS `max_price`, 
 			`c`.`name` AS `category` 
 		FROM 
@@ -139,6 +166,7 @@ function get_bets (mysqli $link, string $id = ''): array
 		"SELECT 
 			`b`.`price`,
 			`b`.date_create,
+			`b`.`user_id`,
 			`u`.`name` AS `user_name`
 		FROM 
 			`lots` `l`
@@ -156,6 +184,100 @@ function get_bets (mysqli $link, string $id = ''): array
 			`b`.`date_create` DESC";
 
 	$stmt = db_get_prepare_stmt($link, $bets_sql, [$id]);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    
+	return mysqli_fetch_all($result, MYSQLI_ASSOC) ?? []; 
+}
+
+/**
+ * Получает на вход соединение с БД, id категории и возвращает количество лотов по в данной категории.
+ * 
+ * @param mysqli $link  Ресурс соединения
+ * @param string $id  Id категории
+ * 
+ * @return int|null Количество лотов
+ */
+function category_count_of_lots($link, $id): ?int
+{
+	$lots_amount_sql = 
+		"SELECT 
+			`l`.`title`,
+			`l`.`id`,
+			`l`.`date_create`,
+			`l`.`date_expire`,
+			`l`.`img_url`,
+			`l`.`start_price`,
+			MAX(`b`.`price`) AS `max_price`,
+			`c`.`name` AS `category`
+		FROM 
+			`lots` `l`
+		LEFT JOIN 
+			`bets` `b`
+		ON 
+			`l`.`id` = `b`.`lot_id`  
+		JOIN 
+			`categories` `c`
+		ON 
+			`c`.`id` = `l`.`category_id`
+		WHERE 
+			`l`.`category_id` = ? 
+		AND 
+			`l`.`date_expire` > NOW()
+		GROUP BY
+			`l`.`id` 	
+		ORDER BY 
+			`l`.`date_create` DESC;";
+	
+		$stmt = db_get_prepare_stmt($link, $lots_amount_sql, [$id]);
+		mysqli_stmt_execute($stmt);
+		$result = mysqli_stmt_get_result($stmt);
+	
+		return mysqli_num_rows($result);
+}
+
+/**
+ * Получает на вход соединение с БД, id категории. Возвращает массив лотов из этой категории
+ * @param mysqli $link  Ресурс соединения
+ * @param string $id  id категории
+ * @param int $page_items Лотов на странице
+ * @param int $offset Сколько пропустить лотов от начала
+ * 
+ * @return array массив лотов
+ */
+function get_lot_by_category(mysqli $link, string $id = '', int $page_items, int $offset): array
+{
+	$lots_sql = 
+		"SELECT 
+			`l`.`title`,
+			`l`.`id`,
+			`l`.`date_create`,
+			`l`.`date_expire`,
+			`l`.`img_url`,
+			`l`.`start_price`,
+			MAX(`b`.`price`) AS `max_price`,
+			`c`.`name` AS `category`
+		FROM 
+			`lots` `l`
+		LEFT JOIN 
+			`bets` `b`
+		ON 
+			`l`.`id` = `b`.`lot_id`  
+		JOIN 
+			`categories` `c`
+		ON 
+			`c`.`id` = `l`.`category_id`
+		WHERE 
+			`l`.`category_id` = ? 
+		AND 
+			`l`.`date_expire` > NOW()
+		GROUP BY
+		 	`l`.`id` 	
+		ORDER BY 
+			`l`.`date_create` DESC
+		LIMIT " . $page_items . ' OFFSET ' . $offset;
+
+	$stmt = db_get_prepare_stmt($link, $lots_sql, [$id]);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
     
@@ -181,6 +303,7 @@ function get_lot(mysqli $link, string $id = ''): ?array
 			`l`.`description`,
 			`l`.`bet_step`,
 			`l`.`date_expire`, 
+			`l`.`user_id`,
 			`c`.`name` 
 		AS 
 			`category`
@@ -198,6 +321,79 @@ function get_lot(mysqli $link, string $id = ''): ?array
 	$result = mysqli_stmt_get_result($stmt);
 
 	return mysqli_fetch_assoc($result); 
+}
+
+/**
+ * Получает на вход соединение с БД, id. Возвращает категорию по id
+ * 
+ * @param mysqli $link  Ресурс соединения
+ * @param string $id  id категории
+ * 
+ * @return array Категория
+ */
+function get_category(mysqli $link, string $id = ''): array 
+{	
+	$category_sql = 
+		"SELECT 
+			`c`.`name`, 
+			`c`.`id` 
+		FROM 
+			`categories` `c`
+		WHERE 
+			`c`.`id` = ?;";
+
+	$stmt = db_get_prepare_stmt($link, $category_sql, [$id]);
+	mysqli_stmt_execute($stmt);
+	$result = mysqli_stmt_get_result($stmt);
+
+	return mysqli_fetch_assoc($result) ?? []; 
+}
+
+/**
+ * Получает на вход соединение с БД, id. Возвращает ставки пользователя по id
+ * 
+ * @param mysqli $link  Ресурс соединения
+ * @param string $id  id пользователя
+ * 
+ * @return array Ставки
+ */
+function get_user_bets(mysqli $link, string $user_id = ''): array 
+{	
+	$bets_sql = 
+		"SELECT 
+		`b`.`id`, 
+		`b`.`price`, 
+		`b`.`date_create`, 
+		`l`.`title` AS `lot_title`,
+		`l`.`img_url` AS `lot_img_url`,
+		`l`.`id` AS `lot_id`,
+		`l`.`winner_id`,
+		`l`.`date_expire` AS `lot_expire`,
+		`c`.`name` AS `category`,
+		`u`.`contacts`,
+		`u`.`name` 
+	FROM
+		`bets` `b`
+	JOIN 
+		`lots` `l`
+	ON
+		`l`.`id` = `b`.`lot_id`
+	JOIN
+		`categories` `c`
+	ON
+		`l`.`category_id` = `c`.`id`
+	JOIN 
+		`users` `u`
+	ON
+		`u`.`id` = `b`.`user_id`
+	WHERE 
+		`b`.`user_id` = ?";
+
+	$stmt = db_get_prepare_stmt($link, $bets_sql, [$user_id]);
+	mysqli_stmt_execute($stmt);
+	$result = mysqli_stmt_get_result($stmt);
+
+	return mysqli_fetch_all($result, MYSQLI_ASSOC) ?? []; 
 }
 
 /**
@@ -301,6 +497,50 @@ function insert_user(mysqli $link, array $user_info)
 }
 
 /**
+ * Получает на вход соединение с БД. Возвращает id ставки, отправленной в БД
+ * 
+ * @param mysqli $link  Ресурс соединения
+ * @param array $bet_properties  массив данных о ставке
+ * 
+ * @return number|string|null id пользователя
+ */
+function insert_bet(mysqli $link, array $bet_properties)
+{	
+	extract($bet_properties);
+
+	$bet_insert_sql = 
+		"INSERT INTO 
+			`bets`
+			(
+				`date_create`,
+				`price`, 
+				`user_id`, 
+				`lot_id`
+			)  
+		VALUES
+			(NOW(), ?, ?, ?)";
+
+	$stmt = db_get_prepare_stmt
+	(
+		$link, 
+		$bet_insert_sql, 
+		[
+			$price, 
+			$user_id, 
+			$lot_id
+		]
+	);
+
+	mysqli_stmt_execute($stmt);
+
+	if (mysqli_insert_id($link)) {
+		return  mysqli_insert_id($link);
+	}
+	
+	return null;
+}
+
+/**
  * Получает на вход соединение с БД и проверяет, зарегистрирован ли такой пользователь.
  * 
  * @param mysqli $link  Ресурс соединения
@@ -322,6 +562,100 @@ function check_user(mysqli $link, array $user_info): bool
 	$res = mysqli_query($link, $user_sql);
 
 	return boolval(mysqli_num_rows($res));
+}
+
+/**
+ * Получает на вход соединение с БД, поисковый запрос и возвращает лоты по названию и описанию.
+ * 
+ * @param mysqli $link  Ресурс соединения
+ * @param string $search_request  Поисковый запрос
+ * @param int $page_items Лотов на странице
+ * @param int $offset Сколько пропустить лотов от начала
+ * 
+ * @return array массив лотов
+ */
+function search_lots($link, $search_request, int $page_items, int $offset): array
+{
+	$search_sql = 
+		"SELECT 
+			`l`.`id`, 
+			`l`.`title`, 
+			`l`.`img_url`, 
+			`l`.`date_expire`,
+			`l`.`description`,
+			`l`.`start_price`, 
+			MAX(`b`.`price`) AS `max_price`,
+			COUNT(`b`.`price`) AS `bets_amount`,
+			`c`.`name` 
+		FROM 
+			`lots` `l`
+		LEFT JOIN 
+			`bets` `b`
+		ON 
+			`l`.`id` = `b`.`lot_id`  
+		JOIN 
+			`categories` `c`
+		ON 
+			`c`.`id` = `l`.`category_id` 
+		WHERE 
+			MATCH(`title`, `description`) AGAINST(?)
+		GROUP BY
+			`l`.`id`
+		ORDER BY 
+			`l`.`date_create` 
+		DESC
+		LIMIT " . $page_items . ' OFFSET ' . $offset;
+	
+		$stmt = db_get_prepare_stmt($link, $search_sql, [$search_request]);
+		mysqli_stmt_execute($stmt);
+		$result = mysqli_stmt_get_result($stmt);
+	
+		return mysqli_fetch_all($result, MYSQLI_ASSOC) ?? [];
+}
+
+/**
+ * Получает на вход соединение с БД, поисковый запрос и возвращает количество лотов по названию и описанию.
+ * 
+ * @param mysqli $link  Ресурс соединения
+ * @param string $search_request  Поисковый запрос
+ * 
+ * @return int|null Количество лотов
+ */
+function search_count_of_lots($link, $search_request): ?int
+{
+	$search_sql = 
+		"SELECT 
+			`l`.`id`, 
+			`l`.`title`, 
+			`l`.`img_url`, 
+			`l`.`date_expire`,
+			`l`.`description`,
+			`l`.`start_price`, 
+			MAX(`b`.`price`) AS `max_price`,
+			`c`.`name` 
+		FROM 
+			`lots` `l`
+		LEFT JOIN 
+			`bets` `b`
+		ON 
+			`l`.`id` = `b`.`lot_id`  
+		JOIN 
+			`categories` `c`
+		ON 
+			`c`.`id` = `l`.`category_id` 
+		WHERE 
+			MATCH(`title`, `description`) AGAINST(?)
+		 GROUP BY
+		 	`l`.`id`
+		ORDER BY 
+			`l`.`date_create` 
+		DESC;";
+	
+		$stmt = db_get_prepare_stmt($link, $search_sql, [$search_request]);
+		mysqli_stmt_execute($stmt);
+		$result = mysqli_stmt_get_result($stmt);
+	
+		return mysqli_num_rows($result);
 }
 
 /**
