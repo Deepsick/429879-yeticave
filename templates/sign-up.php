@@ -43,19 +43,16 @@ $contacts_value = isset($user['contacts']) ? $user['contacts'] : "";
       </a>
       <form class="main-header__search" method="get" action="search.php">
         <input type="search" name="search" placeholder="Поиск лота">
-        <input class="main-header__search-btn" type="submit" name="find" value="Найти">
+        <input class="main-header__search-btn" type="submit" name="find" value="Найти" minlength="3">
       </form>
       <a class="main-header__add-lot button" href="add.php">Добавить лот</a>
       <nav class="user-menu">
         <?php if (isset($_SESSION['user'])): ?>
-            <ul class="user-menu__item user-menu__list">
-                <li class="user-menu__logged">
-                    <p><?=$_SESSION['user']['name'] ?></p>
-                </li>
-                <li class="user-menu__item">
-                    <a href="logout.php">Выход</a>
-                </li>
-            </ul>
+            <div class="user-menu__logged">
+                <p><?=$_SESSION['user']['name']; ?></p>
+                <a href="my-bets.php">Cтавки</a>
+                <a href="logout.php">Выход</a>
+            </div>
         <?php else: ?>
             <ul class="user-menu__list">
                 <li class="user-menu__item">

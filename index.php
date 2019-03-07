@@ -4,6 +4,7 @@ date_default_timezone_set('Europe/Moscow');
 require_once 'session.php';
 require_once 'db.php';
 require_once 'functions.php';
+require_once 'getwinner.php';
 
 $lots = get_lots($connection);
 $categories = get_categories($connection);

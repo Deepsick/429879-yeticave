@@ -42,9 +42,9 @@ if (isset($_GET['search']) && $_GET['search'] !== '' && strlen($_GET['search']) 
     );
     
     echo $search_page;
+    exit;
 } 
-else {
-    header("Location: index.php");
-}
+header("Location: " . $_SERVER['HTTP_REFERER']);
+
 
 

@@ -1,0 +1,12 @@
+{
+    "name": "deepsick/yeticave.local",
+    "authors": [
+        {
+            "name": "deepsick",
+            "email": "mav96@bk.ru"
+        }
+    ],
+    "require": {
+        "swiftmailer/swiftmailer": "^6.1"
+    }
+}

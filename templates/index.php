@@ -11,7 +11,7 @@
         снаряжение.</p>
     <ul class="promo__list">
         <?php foreach ($categories as $category): ?>
-        <li class="promo__item promo__item--boards">
+        <li class="promo__item promo__item--<?=$category['class_name']; ?>">
             <a class="promo__link" href="category.php?id=<?=$category['id']; ?>"><?=$category['name']; ?></a>
         </li>
         <?php endforeach; ?>
@@ -33,7 +33,7 @@
                         href="lot.php?id=<?=$ad['id']  ?>"><?=htmlspecialchars($ad['title']); ?></a></h3>
                 <div class="lot__state">
                     <div class="lot__rate">
-                        <span class="lot__amount">Стартовая цена</span>
+                        <span class="lot__amount">Текущая цена</span>
                         <span class="lot__cost"><?=htmlspecialchars(format_number($ad['max_price'] ?? $ad['start_price'])); ?></span>
                     </div>
                     <div class="lot__timer timer">

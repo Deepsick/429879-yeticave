@@ -17,20 +17,17 @@
         <img src="img/logo.svg" width="160" height="39" alt="Логотип компании YetiCave">
       </a>
       <form class="main-header__search" method="get" action="search.php">
-        <input type="search" name="search" placeholder="Поиск лота">
+        <input type="search" name="search" placeholder="Поиск лота" minlength="3">
         <input class="main-header__search-btn" type="submit" name="find" value="Найти">
       </form>
       <a class="main-header__add-lot button" href="add-lot.php">Добавить лот</a>
       <nav class="user-menu">
             <?php if (isset($_SESSION['user'])): ?>
-                <ul class="user-menu__item user-menu__list">
-                    <li class="user-menu__logged">
-                        <p><?=$_SESSION['user']['name'] ?></p>
-                    </li>
-                    <li class="user-menu__item">
-                        <a href="logout.php">Выход</a>
-                    </li>
-                </ul>
+              <div class="user-menu__logged">
+                  <p><?=$_SESSION['user']['name']; ?></p>
+                  <a href="my-bets.php">Cтавки</a>
+                  <a href="logout.php">Выход</a>
+              </div>
             <?php else: ?>
                 <ul class="user-menu__list">
                     <li class="user-menu__item">
@@ -70,7 +67,7 @@
                         <h3 class="lot__title"><a class="text-link" href="lot.php?id=<?=$lot['id']; ?>"><?=$lot['title']; ?></a></h3>
                         <div class="lot__state">
                             <div class="lot__rate">
-                            <span class="lot__amount">Стартовая цена</span>
+                            <span class="lot__amount">Текущая цена</span>
                             <span class="lot__cost"><?=htmlspecialchars(format_number($lot['max_price'] ?? $lot['start_price'])); ?></span>
                             </div>
                             <div class="lot__timer timer">

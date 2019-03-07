@@ -128,9 +128,10 @@ function get_lots (mysqli $link): array
 		AND 
 			`l`.`winner_id` IS NULL
 		GROUP BY 
-			`l`.`id`	
+			`l`.`id`, `l`.`date_create`	
 		ORDER BY 
-			`l`.`date_create` DESC;";
+			`l`.`date_create` 
+		DESC;";
 
 	$data = mysqli_query($link, $lots_sql);
 
@@ -225,9 +226,10 @@ function category_count_of_lots($link, $id): ?int
 		AND 
 			`l`.`date_expire` > NOW()
 		GROUP BY
-			`l`.`id` 	
+			`l`.`id`, `l`.`date_create`	
 		ORDER BY 
-			`l`.`date_create` DESC;";
+			`l`.`date_create` 
+		DESC;";
 	
 		$stmt = db_get_prepare_stmt($link, $lots_amount_sql, [$id]);
 		mysqli_stmt_execute($stmt);
@@ -272,9 +274,10 @@ function get_lot_by_category(mysqli $link, string $id = '', int $page_items, int
 		AND 
 			`l`.`date_expire` > NOW()
 		GROUP BY
-		 	`l`.`id` 	
+		 	`l`.`id`, `l`.`date_create`	
 		ORDER BY 
-			`l`.`date_create` DESC
+			`l`.`date_create` 
+		DESC
 		LIMIT " . $page_items . ' OFFSET ' . $offset;
 
 	$stmt = db_get_prepare_stmt($link, $lots_sql, [$id]);
@@ -564,19 +567,9 @@ function check_user(mysqli $link, array $user_info): bool
 	return boolval(mysqli_num_rows($res));
 }
 
-/**
- * Получает на вход соединение с БД, поисковый запрос и возвращает лоты по названию и описанию.
- * 
- * @param mysqli $link  Ресурс соединения
- * @param string $search_request  Поисковый запрос
- * @param int $page_items Лотов на странице
- * @param int $offset Сколько пропустить лотов от начала
- * 
- * @return array массив лотов
- */
-function search_lots($link, $search_request, int $page_items, int $offset): array
+function get_search_lot_sql(): string 
 {
-	$search_sql = 
+	return 
 		"SELECT 
 			`l`.`id`, 
 			`l`.`title`, 
@@ -586,7 +579,7 @@ function search_lots($link, $search_request, int $page_items, int $offset): arra
 			`l`.`start_price`, 
 			MAX(`b`.`price`) AS `max_price`,
 			COUNT(`b`.`price`) AS `bets_amount`,
-			`c`.`name` 
+			`c`.`name` AS `category` 
 		FROM 
 			`lots` `l`
 		LEFT JOIN 
@@ -600,11 +593,25 @@ function search_lots($link, $search_request, int $page_items, int $offset): arra
 		WHERE 
 			MATCH(`title`, `description`) AGAINST(?)
 		GROUP BY
-			`l`.`id`
+			`l`.`id`, `l`.`date_create`
 		ORDER BY 
 			`l`.`date_create` 
-		DESC
-		LIMIT " . $page_items . ' OFFSET ' . $offset;
+		DESC";
+}
+
+/**
+ * Получает на вход соединение с БД, поисковый запрос и возвращает лоты по названию и описанию.
+ * 
+ * @param mysqli $link  Ресурс соединения
+ * @param string $search_request  Поисковый запрос
+ * @param int $page_items Лотов на странице
+ * @param int $offset Сколько пропустить лотов от начала
+ * 
+ * @return array массив лотов
+ */
+function search_lots($link, $search_request, int $page_items, int $offset): array
+{
+	$search_sql = get_search_lot_sql() . ' LIMIT ' . $page_items . ' OFFSET ' . $offset;
 	
 		$stmt = db_get_prepare_stmt($link, $search_sql, [$search_request]);
 		mysqli_stmt_execute($stmt);
@@ -623,39 +630,13 @@ function search_lots($link, $search_request, int $page_items, int $offset): arra
  */
 function search_count_of_lots($link, $search_request): ?int
 {
-	$search_sql = 
-		"SELECT 
-			`l`.`id`, 
-			`l`.`title`, 
-			`l`.`img_url`, 
-			`l`.`date_expire`,
-			`l`.`description`,
-			`l`.`start_price`, 
-			MAX(`b`.`price`) AS `max_price`,
-			`c`.`name` 
-		FROM 
-			`lots` `l`
-		LEFT JOIN 
-			`bets` `b`
-		ON 
-			`l`.`id` = `b`.`lot_id`  
-		JOIN 
-			`categories` `c`
-		ON 
-			`c`.`id` = `l`.`category_id` 
-		WHERE 
-			MATCH(`title`, `description`) AGAINST(?)
-		 GROUP BY
-		 	`l`.`id`
-		ORDER BY 
-			`l`.`date_create` 
-		DESC;";
+	$search_sql = get_search_lot_sql();
 	
-		$stmt = db_get_prepare_stmt($link, $search_sql, [$search_request]);
-		mysqli_stmt_execute($stmt);
-		$result = mysqli_stmt_get_result($stmt);
-	
-		return mysqli_num_rows($result);
+	$stmt = db_get_prepare_stmt($link, $search_sql, [$search_request]);
+	mysqli_stmt_execute($stmt);
+	$result = mysqli_stmt_get_result($stmt);
+
+	return mysqli_num_rows($result);
 }
 
 /**
