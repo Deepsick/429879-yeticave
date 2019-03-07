@@ -27,7 +27,7 @@ for ($i = 0; $i < count($winners); $i++) {
     $message = new Swift_Message();
     $message->setSubject('Ваша ставка победила');
     $message->setFrom(['keks@phpdemo.ru' => 'Yeticave.local']);
-    $message->setTo([$winners[$i]['email'] => $winners[$i]['user_name'], 'mav96@bk.ru' => 'Артем']);
+    $message->setTo([$winners[$i]['email'] => $winners[$i]['user_name']]);
 
     $msg_content = include_template(
         'email.php',
