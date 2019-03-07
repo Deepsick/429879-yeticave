@@ -13,7 +13,7 @@ $index_content = include_template(
     'index.php',
     [
         'categories' => $categories,
-        'ads' => $lots
+        'ads' => $lots,
     ]
 );
 $index_page = include_template(
@@ -21,7 +21,7 @@ $index_page = include_template(
     [
         'categories' => $categories,
         'page_content' => $index_content,
-        'page_title' => 'Yeticave - Главная страница'
+        'page_title' => 'Yeticave - Главная страница',
     ]
 );
 

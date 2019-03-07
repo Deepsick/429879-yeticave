@@ -20,7 +20,7 @@ $my_bets_page = include_template(
     [
         'page_title' => 'Мои ставки',
         'categories' => $categories,
-        'bets' => $bets
+        'bets' => $bets,
     ]
 );
 

@@ -215,3 +215,32 @@ SELECT
 			`l`.`date_create` 
 		DESC
 		LIMIT 3 OFFSET 3;
+
+
+
+
+SELECT
+	`u`.`name` AS `user_name`,
+    `b`.`price`
+FROM
+	`bets` `b`
+JOIN
+	`users` `u`
+ON
+	`u`.`id` = `b`.`user_id`
+JOIN
+	`lots` `l`
+ON
+	`l`.`id` = `b`.`lot_id`
+WHERE
+	`b`.`price` = 14000
+AND
+	`l`.`id` = 5;
+    
+    UPDATE `lots`
+    SET `winner_id` = null
+    WHERE `id` > 0;
+    
+  
+
+    

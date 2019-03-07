@@ -33,20 +33,20 @@
 
                 <nav class="user-menu">
                     <?php if (isset($_SESSION['user'])): ?>
-                        <div class="user-menu__logged">
-                            <p><?=$_SESSION['user']['name']; ?></p>
-                            <a href="my-bets.php">Cтавки</a>
-                            <a href="logout.php">Выход</a>
-                        </div>
+                    <div class="user-menu__logged">
+                        <p><?=$_SESSION['user']['name']; ?></p>
+                        <a href="my-bets.php">Cтавки</a>
+                        <a href="logout.php">Выход</a>
+                    </div>
                     <?php else: ?>
-                        <ul class="user-menu__list">
-                            <li class="user-menu__item">
-                                <a href="sign-up.php">Регистрация</a>
-                            </li>
-                            <li class="user-menu__item">
-                                <a href="login.php">Вход</a>
-                            </li>
-                        </ul>
+                    <ul class="user-menu__list">
+                        <li class="user-menu__item">
+                            <a href="sign-up.php">Регистрация</a>
+                        </li>
+                        <li class="user-menu__item">
+                            <a href="login.php">Вход</a>
+                        </li>
+                    </ul>
                     <?php endif; ?>
                 </nav>
             </div>

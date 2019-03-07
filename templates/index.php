@@ -34,7 +34,8 @@
                 <div class="lot__state">
                     <div class="lot__rate">
                         <span class="lot__amount">Текущая цена</span>
-                        <span class="lot__cost"><?=htmlspecialchars(format_number($ad['max_price'] ?? $ad['start_price'])); ?></span>
+                        <span
+                            class="lot__cost"><?=htmlspecialchars(format_number($ad['max_price'] ?? $ad['start_price'])); ?></span>
                     </div>
                     <div class="lot__timer timer">
                         <?=get_short_time_left($ad['date_expire']);  ?>
