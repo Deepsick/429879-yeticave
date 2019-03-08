@@ -384,7 +384,7 @@ function get_user_bets(mysqli $link, string $user_id = ''): array
 	JOIN
 		`users` `u`
 	ON
-		`u`.`id` = `b`.`user_id`
+		`u`.`id` = `l`.`user_id`
 	WHERE
 		`b`.`user_id` = ?";
 

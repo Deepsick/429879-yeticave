@@ -66,8 +66,13 @@
                                 <img src="<?=$bet['lot_img_url'] ?>" width="54" height="40"
                                     alt="<?=$bet['lot_title']; ?>">
                             </div>
-                            <h3 class="rates__title"><a
-                                    href="lot.php?id=<?=$bet['lot_id'] ?>"><?=$bet['lot_title']; ?></a></h3>
+                            <div>
+                                <h3 class="rates__title"><a
+                                        href="lot.php?id=<?=$bet['lot_id'] ?>"><?=$bet['lot_title']; ?></a></h3>
+                                <?php if (strtotime($bet['lot_expire']) <= time() && intval($bet['winner_id']) === intval($_SESSION['user']['id'])): ?>
+                                    <p><?=$bet['contacts']; ?></p>
+                                <? endif; ?>
+                            </div>
                         </td>
                         <td class="rates__category">
                             <?=$bet['category'] ?>
