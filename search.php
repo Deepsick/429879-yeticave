@@ -43,3 +43,4 @@ if (isset($_GET['search']) && $_GET['search'] !== '' && strlen($_GET['search']) 
     exit;
 }
 header("Location: " . $_SERVER['HTTP_REFERER']);
+var_dump($_SERVER['HTTP_REFERER']);

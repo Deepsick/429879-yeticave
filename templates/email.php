@@ -2,6 +2,7 @@
 /**
 * @var array $winner Информация о победителе
 * @var array $lot Информация о лоте
+* @var array $_SERVER Информация о сервере
 */
 ?>
 <html>
@@ -13,9 +14,9 @@
 <body>
     <h1>Поздравляем с победой</h1>
     <p>Здравствуйте, <?=$winner['user_name']; ?> </p>
-    <p>Ваша ставка для лота <a href="http://yeticave.local/lot.php?id=<?=$lot['id']; ?>"><?=$lot['title']; ?></a>
+    <p>Ваша ставка для лота <a href="http<?php $_SERVER["REQUEST_SCHEME"] === 'https' ? 's' : ''; ?>://<?=$_SERVER['HTTP_HOST']; ?>/lot.php?id=<?=$lot['id']; ?>"><?=$lot['title']; ?></a>
         победила.</p>
-    <p>Перейдите по ссылке <a href="http://yeticave.local/my-bets.php">мои ставки</a>,
+    <p>Перейдите по ссылке <a href="http://<?=$_SERVER['HTTP_HOST']; ?>/my-bets.php">мои ставки</a>,
         чтобы связаться с автором объявления</p>
     <small>Интернет Аукцион "YetiCave"</small>
 </body>
