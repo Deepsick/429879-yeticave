@@ -40,13 +40,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$sign_up_page = include_template(
+$sign_up_page_content = include_template(
     'sign-up.php',
     [
-        'page_title' => 'Регистрация',
-        'categories' => $categories,
         'errors' => $errors,
-        'user' => $user,
+        'user' => $user
+    ]
+);
+
+$sign_up_page = include_template(
+    'inner-layout.php',
+    [
+        'categories' => $categories,
+        'page_title' => 'Регистрация',
+        'page_content' => $sign_up_page_content
     ]
 );
 

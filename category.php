@@ -40,15 +40,23 @@ if (isset($_GET['id']) && $_GET['id'] !== '') {
     $lots = get_lot_by_category($connection, $id, $page_items, $offset);
 }
 
-$category_page = include_template(
+$category_page_content = include_template(
     'category.php',
     [
-        'categories' => $categories,
         'category' => $category,
         'lots' => $lots,
         'pages' => $pages,
         'pages_count' => $pages_count,
-        'cur_page' => $cur_page,
+        'cur_page' => $cur_page
+    ]
+);
+
+$category_page = include_template(
+    'inner-layout.php',
+    [
+        'categories' => $categories,
+        'page_title' => $category['name'],
+        'page_content' => $category_page_content
     ]
 );
 

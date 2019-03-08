@@ -46,13 +46,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$add_page = include_template(
+$add_page_content = include_template(
     'add-lot.php',
     [
-        'page_title' => 'Добавление лота',
         'categories' => $categories,
         'errors' => $errors,
-        'lot' => $lot,
+        'lot' => $lot
+    ]
+);
+
+$add_page = include_template(
+    'inner-layout.php',
+    [
+        'categories' => $categories,
+        'page_title' => 'Добавление лота',
+        'page_content' => $add_page_content
     ]
 );
 

@@ -26,16 +26,23 @@ if (isset($_GET['search']) && $_GET['search'] !== '' && strlen($_GET['search']) 
         $lots = search_lots($connection, $search, $page_items, $offset);
     }
 
-    $search_page = include_template(
+    $search_page_content = include_template(
         'search.php',
         [
-            'page_title' => 'Результаты поиска',
-            'categories' => $categories,
             'lots' => $lots,
             'search' => $search,
             'pages' => $pages,
             'pages_count' => $pages_count,
-            'cur_page' => $cur_page,
+            'cur_page' => $cur_page
+        ]
+    );
+
+    $search_page = include_template(
+        'inner-layout.php',
+        [
+            'categories' => $categories,
+            'page_title' => 'Результаты поиска',
+            'page_content' => $search_page_content
         ]
     );
 

@@ -9,7 +9,7 @@
     </div>
     <div>
         <h3 class="rates__title"><a href="lot.php?id=<?=$bet['lot_id'] ?>"><?=$bet['lot_title']; ?></a></h3>
-        <p>Телефон +7 900 667-84-48, Скайп: Vlas92. Звонить с 14 до 20</p>
+        <p><?=$bet['contacts']; ?></p>
     </div>
 </td>
 <td class="rates__category">

@@ -2,8 +2,8 @@
 /**
 * @var string $page_title Заголовок страницы
 * @var array $_SESSION Данные о сессии пользователя
+* @var array $categories Массив категорий
 * @var string $page_content Контент страницы
-* @var string[] $categories Массив категорий
 */
 ?>
 
@@ -13,17 +13,18 @@
 <head>
     <meta charset="UTF-8">
     <title><?=$page_title; ?></title>
-    <link href="css/normalize.min.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
+    <link href="../css/normalize.min.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
 </head>
 
 <body>
+
     <div class="page-wrapper">
 
         <header class="main-header">
             <div class="main-header__container container">
                 <h1 class="visually-hidden">YetiCave</h1>
-                <a class="main-header__logo">
+                <a class="main-header__logo" href="index.php">
                     <img src="img/logo.svg" width="160" height="39" alt="Логотип компании YetiCave">
                 </a>
                 <form class="main-header__search" method="get" action="search.php">
@@ -31,7 +32,6 @@
                     <input class="main-header__search-btn" type="submit" name="find" value="Найти">
                 </form>
                 <a class="main-header__add-lot button" href="add.php">Добавить лот</a>
-
                 <nav class="user-menu">
                     <?php if (isset($_SESSION['user'])): ?>
                     <div class="user-menu__logged">
@@ -53,9 +53,19 @@
             </div>
         </header>
 
-        <main class="container">
+        <main>
+            <nav class="nav">
+                <ul class="nav__list container">
+                    <?php foreach ($categories as $category): ?>
+                    <li class="nav__item">
+                        <a href="category.php?id=<?=$category['id']; ?>"><?=$category['name'];  ?></a>
+                    </li>
+                    <?php endforeach; ?>
+                </ul>
+            </nav>
             <?=$page_content; ?>
         </main>
+
     </div>
 
     <footer class="main-footer">
@@ -63,7 +73,7 @@
             <ul class="nav__list container">
                 <?php foreach ($categories as $category): ?>
                 <li class="nav__item">
-                    <a href="category.php?id=<?=$category['id']; ?>"><?=$category['name']; ?></a>
+                    <a href="category.php?id=<?=$category['id']; ?>"><?=$category['name'];  ?></a>
                 </li>
                 <?php endforeach; ?>
             </ul>

@@ -12,11 +12,15 @@ $is_form_shown = null;
 if (isset($_GET['id']) && $_GET['id'] !== '') {
     $lot = get_lot($connection, $_GET['id']);
     if (is_null($lot)) {
+        $error_page_content = include_template(
+            '404.php', []);
+
         $error_page = include_template(
-            '404.php',
+            'inner-layout.php',
             [
                 'categories' => $categories,
                 'page_title' => 'Yeticave - 404 not found',
+                'page_content' => $error_page_content
             ]
         );
 
@@ -85,15 +89,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$lot_page = include_template(
+$lot_page_content = include_template(
     'lot.php',
     [
-        'categories' => $categories,
         'lot' => $lot,
         'bets' => $bets,
         'errors' => $errors,
         'bet_price' => $bet_price,
         'is_form_shown' => $is_form_shown,
+    ]
+);
+
+$lot_page = include_template(
+    'inner-layout.php',
+    [
+        'categories' => $categories,
+        'page_title' => $lot['title'],
+        'page_content' => $lot_page_content
     ]
 );
 

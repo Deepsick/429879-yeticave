@@ -5,6 +5,7 @@
 * @var array $_SERVER Информация о сервере
 */
 ?>
+
 <html>
 
 <head>
