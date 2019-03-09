@@ -9,12 +9,12 @@
     </div>
     <div>
         <h3 class="rates__title"><a href="lot.php?id=<?=htmlspecialchars($bet['lot_id']); ?>"><?=htmlspecialchars($bet['lot_title']); ?></a></h3>
-        <p><?=htmlspecialchars($bet['contacts']); ?></p>
+        <p>Свяжитесь с автором: <br><?=htmlspecialchars($bet['contacts']); ?></p>
     </div>
 </td>
 <td class="rates__category">
     <?=htmlspecialchars($bet['category']); ?>
 </td>
 <td class="rates__timer">
-    <div class="timer timer--win">Ставка выиграла</div>
+    <div class="timer timer--win" style="width: 150px;">Ставка выиграла</div>
 </td>

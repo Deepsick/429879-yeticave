@@ -11,9 +11,9 @@ $pages_count = null;
 $pages = null;
 
 if (isset($_GET['id']) && $_GET['id'] !== '') {
-    $id = $_GET['id'];
+    $id = intval($_GET['id']);
 
-    $category = get_category($connection, $id);
+    $category = get_category($connection, intval($id));
 
     if (!$category) {
         $error_page = include_template(

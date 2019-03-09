@@ -20,7 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors = validate_form();
 
     if ($_FILES['img_url']['tmp_name'] !== '') {
-        $img_url = check_file($errors);
+        $img_url = check_file($_FILES['img_url']);
+        
         if (is_null($img_url)) {
             $errors['file'] = 'Загрузите картинку в формате png или jpeg';
         }
@@ -32,13 +33,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $lot_properties =
             [
             'title' => $lot['title'],
-            'category_id' => $lot['category'],
+            'category_id' => intval($lot['category']),
             'description' => $lot['description'],
             'img_url' => $img_url,
-            'start_price' => $lot['start_price'],
-            'bet_step' => $lot['bet_step'],
+            'start_price' => intval($lot['start_price']),
+            'bet_step' => intval($lot['bet_step']),
             'date_expire' => $lot['date_expire'],
-            'user_id' => $_SESSION['user']['id'],
+            'user_id' => intval($_SESSION['user']['id']),
         ];
         $lot_id = insert_lot($connection, $lot_properties);
         if (is_null($lot_id)) {

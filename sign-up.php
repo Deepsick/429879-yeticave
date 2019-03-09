@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors = validate_user_form();
 
     if ($_FILES['avatar_url']['tmp_name'] !== '') {
-        $img_url = check_avatar();
+        $img_url = check_file($_FILES['avatar_url']);
 
         if (is_null($img_url)) {
             $errors['file'] = 'Загрузите картинку в формате png или jpeg';
@@ -26,11 +26,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!count($errors)) {
+        $hashed_password = password_hash($user['password'], PASSWORD_DEFAULT);
+
         $user_properties =
             [
             'name' => $user['name'],
             'email' => $user['email'],
-            'password' => $user['password'],
+            'password' => $hashed_password,
             'contacts' => $user['contacts'],
             'avatar_url' => $img_url,
         ];

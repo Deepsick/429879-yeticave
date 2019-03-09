@@ -25,7 +25,7 @@
                 <option selected disabled>Выберите категорию</option>
                 <?php foreach ($categories as $category): ?>
                 <option value="<?=$category['id']; ?>"
-                    <?php echo (intval($lot['category']) === intval($category['id'])) ? 'selected="true"' : '';  ?>>
+                    <?php echo (intval($lot['category']) === intval($category['id']) && isset($lot['category'])) ? 'selected="true"' : '';  ?>>
                     <?=$category['name']; ?>
                 </option>
                 <?php endforeach; ?>

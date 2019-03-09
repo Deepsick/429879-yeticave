@@ -13,7 +13,7 @@ require_once 'mysql_helper.php';
 $categories = get_categories($connection);
 $lots = null;
 $user_id = intval($_SESSION['user']['id']);
-$bets = get_user_bets($connection, $user_id);
+$bets = get_user_bets($connection, intval($user_id));
 
 $my_bets_page_content = include_template(
     'my-bets.php',

@@ -13,6 +13,6 @@
     <?=htmlspecialchars($bet['category']); ?>
 </td>
 <td class="rates__timer">
-    <div class="timer <?php echo (strtotime($bet['lot_expire']) <=  (time() + 60*60)) ? 'timer--finishing' : ''; ?>">
-        <?=get_short_time_left($bet['lot_expire']); ?></div>
+    <div class="timer <?php echo (strtotime($bet['lot_expire']) <=  (time() + 60*60)) ? 'timer--finishing' : ''; ?>" style="width: 150px;">
+        <?=(strtotime($bet['lot_expire']) >=  time()) ? get_short_time_left($bet['lot_expire']) : 'Торги окончены'; ?></div>
 </td>
