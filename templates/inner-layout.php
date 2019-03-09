@@ -35,7 +35,7 @@
                 <nav class="user-menu">
                     <?php if (isset($_SESSION['user'])): ?>
                     <div class="user-menu__logged">
-                        <p><?=$_SESSION['user']['name']; ?></p>
+                        <p><?=htmlspecialchars($_SESSION['user']['name']); ?></p>
                         <a href="my-bets.php">Cтавки</a>
                         <a href="logout.php">Выход</a>
                     </div>
