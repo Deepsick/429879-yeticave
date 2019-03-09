@@ -12,13 +12,7 @@
         <?php foreach($bets as $bet): ?>
         <tr
             class="rates__item <?php echo (intval($bet['winner_id']) === intval($_SESSION['user']['id'])) ? 'rates__item--win' : ''; ?>">
-            <?php if (strtotime($bet['lot_expire']) <= time() && intval($bet['winner_id']) === intval($_SESSION['user']['id'])) {
-                                $bet_content = include_template('my-winner-bets.php', ['bet' => $bet]); 
-                            } else {
-                                $bet_content = include_template('my-other-bets.php', ['bet' => $bet]); 
-                            }
-                            echo  $bet_content;
-                        ?>
+            <?=render_user_bet_row($bet, intval($_SESSION['user']['id'])); ?>
             <td class="rates__price">
                 <?=format_number($bet['price']); ?>
             </td>

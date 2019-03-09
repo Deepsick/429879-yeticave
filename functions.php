@@ -68,19 +68,19 @@ function get_short_time_left(string $expiredAt = 'tomorrow'): string
     if ($left_minutes >= ($hours_in_day * $minutes_in_hour)) {
         return date('d.m.y в H:i', strtotime($expiredAt));
     } elseif ($left_minutes >= $minutes_in_hour) {
-        return floor($left_minutes / $minutes_in_hour) . ' ' . 
-            nounEnding(
-                floor($left_minutes / $minutes_in_hour), 
-                ['час', 'часа', 'часов']
-            );
+        return floor($left_minutes / $minutes_in_hour) . ' ' .
+        nounEnding(
+            floor($left_minutes / $minutes_in_hour),
+            ['час', 'часа', 'часов']
+        );
     } elseif ($left_minutes >= 1) {
-        return floor($left_minutes) . ' ' . 
-            nounEnding(
-                floor($left_minutes), 
-                ['минута', 'минуты', 'минут']
-            );
+        return floor($left_minutes) . ' ' .
+        nounEnding(
+            floor($left_minutes),
+            ['минута', 'минуты', 'минут']
+        );
     }
-    
+
     return 'несколько секунд';
 }
 
@@ -142,7 +142,7 @@ function get_categories(mysqli $link): array
 
 /**
  * Возвращает ставки по id лота.
- * 
+ *
  * @param mysqli $link  Ресурс соединения
  * @param int $id  id лота
  * @return array массив ставок
@@ -224,7 +224,7 @@ function category_count_of_lots($link, $id): ?int
 
 /**
  * Возвращает массив лотов из этой категории.
- * 
+ *
  * @param mysqli $link  Ресурс соединения
  * @param int $id  id категории
  * @param int $limit Лотов на странице
@@ -387,13 +387,13 @@ function get_user_bets(mysqli $link, int $user_id): array
  * @param array $lot_info  массив данных о лоте
  * [
  *  'title' => 'Доска для спуска',
-*   'category_id' => 2,
-*   'description' => 'Классная доска, сам катал',
-*   'img_url' => 'img/picture-1.png',
-*   'start_price' => 400,
-*   'bet_step' => 20,
-*   'date_expire' => '03-20-2019',
-*   'user_id' => 5
+ *   'category_id' => 2,
+ *   'description' => 'Классная доска, сам катал',
+ *   'img_url' => 'img/picture-1.png',
+ *   'start_price' => 400,
+ *   'bet_step' => 20,
+ *   'date_expire' => '03-20-2019',
+ *   'user_id' => 5
  * ]
  * @return number|string|null id лота
  */
@@ -635,11 +635,11 @@ function get_winners(mysqli $link, array &$expired_lots): array
 
     foreach ($expired_lots as &$lot) {
         $stmt = db_get_prepare_stmt(
-            $link, 
-            $winner_info_sql, 
+            $link,
+            $winner_info_sql,
             [
-                $lot['max_price'], 
-                $lot['id']
+                $lot['max_price'],
+                $lot['id'],
             ]
         );
 
@@ -650,7 +650,6 @@ function get_winners(mysqli $link, array &$expired_lots): array
 
         $lot['winner'] = $winner;
     }
-
 
     return $expired_lots;
 }
@@ -672,22 +671,22 @@ function insert_winners(mysqli $link, array &$lots): array
 		WHERE
 			`l`.`id` = ?";
 
-    foreach($lots as &$lot) {
+    foreach ($lots as &$lot) {
         $stmt = db_get_prepare_stmt
             (
-                $link,
-                $winner_insert_sql,
-                [
-                    intval($lot['winner']['user_id']),
-                    intval($lot['id'])
-                ]
-            );
+            $link,
+            $winner_insert_sql,
+            [
+                intval($lot['winner']['user_id']),
+                intval($lot['id']),
+            ]
+        );
 
         mysqli_stmt_execute($stmt);
 
         if (mysqli_affected_rows($link) === 0) {
             unset($lot['winner']);
-        } 
+        }
     }
 
     return $lots;
@@ -821,17 +820,17 @@ function get_format_date(string $date): string
     if ($passed_minutes >= ($hours_in_day * $minutes_in_hour)) {
         return date('d.m.y в H:i', strtotime($date));
     } elseif ($passed_minutes >= $minutes_in_hour) {
-        return floor(($passed_minutes / $minutes_in_hour)) . ' ' . 
-            nounEnding(
-                floor(($passed_minutes / $minutes_in_hour)), 
-                ['час', 'часа', 'часов']
-            );
+        return floor(($passed_minutes / $minutes_in_hour)) . ' ' .
+        nounEnding(
+            floor(($passed_minutes / $minutes_in_hour)),
+            ['час', 'часа', 'часов']
+        );
     } elseif ($passed_minutes >= 1) {
-        return floor($passed_minutes) . ' ' . 
-            nounEnding(
-                floor($passed_minutes), 
-                ['минута', 'минуты', 'минут']
-            );
+        return floor($passed_minutes) . ' ' .
+        nounEnding(
+            floor($passed_minutes),
+            ['минута', 'минуты', 'минут']
+        );
     } else {
         return 'только что';
     }
@@ -933,7 +932,7 @@ function validate_user_form(): array
  * @param string[] $user_input  массив данных о пользователе
  * @return array Возвращает массив ошибок
  */
-function validate_login_form($user_input): array
+function validate_login_form(array $user_input): array
 {
     $required_fields = ['email', 'password'];
 
@@ -958,7 +957,7 @@ function validate_login_form($user_input): array
  * @param array $fileElement Фаил, который проверяется
  * @return string|null Возвращает путь до картинки или null
  */
-function check_file($fileElement): ?string
+function check_file(array $fileElement): ?string
 {
     $file_type = mime_content_type($fileElement['tmp_name']);
     $allowed_types = ['image/png', 'image/jpeg'];
@@ -984,4 +983,33 @@ function validate_date(string $date, string $format): string
 {
     $d = DateTime::createFromFormat($format, $date);
     return $d && $d->format($format) === $date;
+}
+
+/**
+ * Возвращает true, если лот истек и текущий пользователь - победитель, иначе false.
+ *
+ * @param  array $bet
+ * @param  int $user_id
+ * @return bool
+ */
+function is_user_winner(array $bet, int $user_id): bool
+{
+    return strtotime($bet['lot_expire']) <= time() && intval($bet['winner_id']) === $user_id;
+}
+
+/**
+ * Возвращает ту или иную строку таблицы ставок в зависимости от победы пользователя.
+ *
+ * @param  array $bet
+ * @param  int $user_id
+ * @return string
+ */
+function render_user_bet_row(array $bet, int $user_id): string
+{
+    $template = is_user_winner($bet, $user_id) ? 'my-winner-bets.php' : 'my-other-bets.php';
+
+    return include_template(
+        $template,
+        ['bet' => $bet]
+    );
 }
