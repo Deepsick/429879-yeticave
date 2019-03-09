@@ -2,14 +2,14 @@ USE `429879-yeticave`;
 
 -- Добавляем категории в БД 
 INSERT INTO `categories` 
-(`name`) 
+(`name`, `class_name`) 
 VALUES 
-('Доски и лыжи'), 
-('Крепления'), 
-('Ботинки'),
-('Одежда'), 
-('Инструменты'),
-('Разное');
+('Доски и лыжи', 'boards'), 
+('Крепления', 'attachment'), 
+('Ботинки', 'boots'),
+('Одежда', 'clothing'), 
+('Инструменты', 'tools'),
+('Разное', 'other');
 
 -- Добавляем пользователей в БД
 INSERT INTO `users` 
@@ -187,3 +187,60 @@ ON
 	`u`.`id` = `b`.`user_id`
 WHERE 
 	`b`.`user_id` = 8;
+    
+SELECT 
+			`l`.`id`, 
+			`l`.`title`, 
+			`l`.`img_url`, 
+			`l`.`date_expire`,
+			`l`.`description`,
+			`l`.`start_price`, 
+			MAX(`b`.`price`) AS `max_price`,
+			`c`.`name` 
+		FROM 
+			`lots` `l`
+		LEFT JOIN 
+			`bets` `b`
+		ON 
+			`l`.`id` = `b`.`lot_id`  
+		JOIN 
+			`categories` `c`
+		ON 
+			`c`.`id` = `l`.`category_id` 
+		WHERE 
+			MATCH(`title`, `description`) AGAINST('sdsds')
+		GROUP BY
+			`l`.`id`
+		ORDER BY 
+			`l`.`date_create` 
+		DESC
+		LIMIT 3 OFFSET 3;
+
+
+
+
+SELECT
+	`u`.`name` AS `user_name`,
+    `b`.`price`
+FROM
+	`bets` `b`
+JOIN
+	`users` `u`
+ON
+	`u`.`id` = `b`.`user_id`
+JOIN
+	`lots` `l`
+ON
+	`l`.`id` = `b`.`lot_id`
+WHERE
+	`b`.`price` = 14000
+AND
+	`l`.`id` = 5;
+    
+    UPDATE `lots`
+    SET `winner_id` = null
+    WHERE `id` > 0;
+    
+  
+
+    

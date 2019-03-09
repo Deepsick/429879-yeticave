@@ -12,4 +12,5 @@ if (!$connection) {
     exit('Невозможно подключиться к базе данных');
 }
 
+mysqli_options($connection, MYSQLI_OPT_INT_AND_FLOAT_NATIVE, 1);
 mysqli_set_charset($connection, 'utf8');
