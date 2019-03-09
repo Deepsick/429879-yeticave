@@ -9,24 +9,24 @@
 
 <div class="container">
     <section class="lots">
-        <h2>Результаты поиска по запросу «<span><?=$search; ?></span>»</h2>
+        <h2>Результаты поиска по запросу «<span><?=htmlspecialchars($search); ?></span>»</h2>
         <ul class="lots__list">
             <?php if (count($lots)): ?>
             <?php foreach($lots as $lot): ?>
             <li class="lots__item lot">
                 <div class="lot__image">
-                    <img src="<?=$lot['img_url'] ?>" width="350" height="260" alt="<?=$lot['title']; ?>">
+                    <img src="<?=htmlspecialchars($lot['img_url']); ?>" width="350" height="260" alt="<?=htmlspecialchars($lot['title']); ?>">
                 </div>
                 <div class="lot__info">
-                    <span class="lot__category"><?=$lot['category']; ?></span>
+                    <span class="lot__category"><?=htmlspecialchars($lot['category']); ?></span>
                     <h3 class="lot__title"><a class="text-link"
-                            href="lot.php?id=<?=$lot['id']; ?>"><?=$lot['title']; ?></a></h3>
+                            href="lot.php?id=<?=$lot['id']; ?>"><?=htmlspecialchars($lot['title']); ?></a></h3>
                     <div class="lot__state">
                         <div class="lot__rate">
                             <span
                                 class="lot__amount"><?=$lot['bets_amount'] . ' ' . nounEnding(strval($lot['bets_amount']), ['ставка', 'ставки', 'ставок']); ?></span>
                             <span
-                                class="lot__cost"><?=htmlspecialchars(format_number($lot['max_price'] ?? $lot['start_price'])); ?>
+                                class="lot__cost"><?=format_number($lot['max_price'] ?? $lot['start_price']); ?>
                             </span>
                         </div>
                         <div class="lot__timer timer">

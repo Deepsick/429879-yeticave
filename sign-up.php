@@ -15,6 +15,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($_FILES['avatar_url']['tmp_name'] !== '') {
         $img_url = check_avatar();
+
+        if (is_null($img_url)) {
+            $errors['file'] = 'Загрузите картинку в формате png или jpeg';
+        }
     }
 
     if (check_user($connection, $user)) {

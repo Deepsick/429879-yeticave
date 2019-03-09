@@ -864,11 +864,11 @@ function validate_form(): array
     }
 
     if ($_POST['start_price'] <= 0) {
-        $errors['start_price'] = 'Введите число больше нуля';
+        $errors['start_price'] = 'Введите целое число больше нуля';
     }
 
     if ($_POST['bet_step'] <= 0) {
-        $errors['bet_step'] = 'Введите число больше нуля';
+        $errors['bet_step'] = 'Введите целое число больше нуля';
     }
 
     $date_format = 'Y-m-d';
@@ -942,9 +942,8 @@ function check_file(): ?string
 {
     $file_type = mime_content_type($_FILES['img_url']['tmp_name']);
     $allowed_types = ['image/png', 'image/jpeg'];
-    if (!in_array($file_type, $allowed_types)) {
-        $errors['file'] = 'Загрузите картинку в формате png или jpeg';
-    } else {
+
+    if (in_array($file_type, $allowed_types)) {
         $file_path = __DIR__ . '/img/';
         $img_url = $file_path . $_FILES['img_url']['name'];
         move_uploaded_file($_FILES['img_url']['tmp_name'], $img_url);
@@ -963,9 +962,8 @@ function check_avatar(): ?string
 {
     $file_type = mime_content_type($_FILES['avatar_url']['tmp_name']);
     $allowed_types = ['image/png', 'image/jpeg'];
-    if (!in_array($file_type, $allowed_types)) {
-        $errors['file'] = 'Загрузите картинку в формате png или jpeg';
-    } else {
+
+    if (in_array($file_type, $allowed_types)) {
         $file_path = __DIR__ . '/img/';
         $img_url = $file_path . $_FILES['avatar_url']['name'];
         move_uploaded_file($_FILES['avatar_url']['tmp_name'], $img_url);

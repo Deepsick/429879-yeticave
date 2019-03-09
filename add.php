@@ -10,7 +10,8 @@ require_once 'db.php';
 require_once 'functions.php';
 
 $errors = [];
-$lot = null;
+$lot = [];
+$lot['category'] = null;
 $categories = get_categories($connection);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -19,7 +20,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $errors = validate_form();
 
     if ($_FILES['img_url']['tmp_name'] !== '') {
-        $img_url = check_file();
+        $img_url = check_file($errors);
+        if (is_null($img_url)) {
+            $errors['file'] = 'Загрузите картинку в формате png или jpeg';
+        }
     } else {
         $errors['file'] = 'Вы не загрузили файл';
     }

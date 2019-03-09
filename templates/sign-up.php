@@ -11,7 +11,7 @@
     <div class="form__item <?=!empty($errors['email']) ? "form__item--invalid" : ""; ?>">
         <label for="email">E-mail*</label>
         <input id="email" type="email" name="email" placeholder="Введите e-mail"
-            value="<?=isset($user['email']) ? $user['email'] : ""; ?>" required>
+            value="<?=isset($user['email']) ? htmlspecialchars($user['email']) : ""; ?>" required>
         <?php if (isset($user['email'])): ?>
         <span class="form__error"><?=$errors['email']; ?></span>
         <?php endif; ?>
@@ -29,7 +29,7 @@
     <div class="form__item <?=!empty($errors['name']) ? "form__item--invalid" : ""; ?>">
         <label for="name">Имя*</label>
         <input id="name" type="text" name="name" placeholder="Введите имя"
-            value="<?=isset($user['name']) ? $user['name'] : ""; ?>" required>
+            value="<?=isset($user['name']) ? htmlspecialchars($user['name']) : ""; ?>" required>
         <?php if (isset($user['name'])): ?>
         <span class="form__error"><?=$errors['name']; ?></span>
         <?php endif; ?>
@@ -37,7 +37,7 @@
     <div class="form__item <?=!empty($errors['contacts'])? "form__item--invalid" : ""; ?>">
         <label for="message">Контактные данные*</label>
         <textarea id="message" name="contacts" placeholder="Напишите как с вами связаться"
-            required><?=isset($user['contacts']) ? $user['contacts'] : ""; ?></textarea>
+            required><?=isset($user['contacts']) ? htmlspecialchars($user['contacts']) : ""; ?></textarea>
         <?php if (isset($user['contacts'])): ?>
         <span class="form__error"><?=$errors['contacts']; ?></span>
         <?php endif; ?>
@@ -56,6 +56,9 @@
             <label for="photo2">
                 <span>+ Добавить</span>
             </label>
+            <?php if (isset($errors['file'])): ?>
+            <span class="form__error"><?=$errors['file']; ?></span>
+            <?php endif; ?>
         </div>
     </div>
     <span class="form__error form__error--bottom">Пожалуйста, исправьте ошибки в форме.</span>

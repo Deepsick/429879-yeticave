@@ -10,7 +10,7 @@
     <div class="form__item <?=!empty($errors['email']) ? "form__item--invalid" : ""; ?>">
         <label for="email">E-mail*</label>
         <input id="email" type="email" name="email" placeholder="Введите e-mail"
-            value="<?=isset($login_info['email']) ? $login_info['email'] : ""; ?>" required>
+            value="<?=isset($login_info['email']) ? htmlspecialchars($login_info['email']) : ""; ?>" required>
         <?php if (isset($login_info['email'])): ?>
         <span class="form__error"><?=$errors['email']; ?></span>
         <?php endif; ?>

@@ -30,12 +30,12 @@
             <div class="lot__info">
                 <span class="lot__category"><?=htmlspecialchars($ad['category']); ?></span>
                 <h3 class="lot__title"><a class="text-link"
-                        href="lot.php?id=<?=$ad['id']  ?>"><?=htmlspecialchars($ad['title']); ?></a></h3>
+                        href="lot.php?id=<?=$ad['id'];  ?>"><?=htmlspecialchars($ad['title']); ?></a></h3>
                 <div class="lot__state">
                     <div class="lot__rate">
                         <span class="lot__amount">Текущая цена</span>
                         <span
-                            class="lot__cost"><?=htmlspecialchars(format_number($ad['max_price'] ?? $ad['start_price'])); ?></span>
+                            class="lot__cost"><?=format_number($ad['max_price'] ?? $ad['start_price']); ?></span>
                     </div>
                     <div class="lot__timer timer">
                         <?=get_short_time_left($ad['date_expire']);  ?>

@@ -9,14 +9,14 @@
 ?>
 
 <section class="lot-item container">
-    <h2><?=$lot['title'] ?></h2>
+    <h2><?=htmlspecialchars($lot['title']); ?></h2>
     <div class="lot-item__content">
         <div class="lot-item__left">
             <div class="lot-item__image">
-                <img src="<?=$lot['img_url'] ?>" width="730" height="548" alt="<?=$lot['category'] ?>">
+                <img src="<?=htmlspecialchars($lot['img_url']); ?>" width="730" height="548" alt="<?=$lot['category'] ?>">
             </div>
-            <p class="lot-item__category">Категория: <span><?=$lot['category']; ?></span></p>
-            <p class="lot-item__description"><?=$lot['description']; ?></p>
+            <p class="lot-item__category">Категория: <span><?=htmlspecialchars($lot['category']); ?></span></p>
+            <p class="lot-item__description"><?=htmlspecialchars($lot['description']); ?></p>
         </div>
         <div class="lot-item__right">
             <div class="lot-item__state">
@@ -44,7 +44,7 @@
                             <label for="cost">Ваша ставка</label>
                             <input id="cost" type="number" name="bet_price"
                                 placeholder="<?=($bets[0]['price'] ?? $lot['start_price']) + $lot['bet_step'];?>"
-                                value="<?=isset($bet_price) ? $bet_price : ""; ?>" required>
+                                value="<?=isset($bet_price) ? htmlspecialchars($bet_price) : ""; ?>" required>
                             <?php if (isset($bet_price)): ?>
                                 <span class="form__error"><?=$errors['bet_price']; ?></span>
                             <?php endif; ?>
@@ -59,7 +59,7 @@
                     <table class="history__list">
                         <?php foreach($bets as $bet): ?>
                             <tr class="history__item">
-                                <td class="history__name"><?=$bet['user_name']; ?></td>
+                                <td class="history__name"><?=htmlspecialchars($bet['user_name']); ?></td>
                                 <td class="history__price"><?=format_number($bet['price']); ?></td>
                                 <td class="history__time"><?=get_format_date($bet['date_create']); ?></td>
                             </tr>

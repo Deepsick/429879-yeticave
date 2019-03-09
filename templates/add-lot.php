@@ -13,7 +13,7 @@
         <div class="form__item <?=!empty($errors['title']) ? "form__item--invalid" : ""; ?>">
             <label for="lot-name">Наименование</label>
             <input id="lot-name" type="text" name="title" placeholder="Введите наименование лота"
-                value="<?=isset($lot['title']) ? $lot['title'] : ""; ?>" required>
+                value="<?=isset($lot['title']) ? htmlspecialchars($lot['title']) : ""; ?>" required>
             <?php if (isset($lot['title'])): ?>
             <span class="form__error"><?=$errors['title']; ?></span>
             <?php endif; ?>
@@ -39,7 +39,7 @@
     <div class="form__item form__item--wide <?=!empty($errors['description']) ? "form__item--invalid" : ""; ?>">
         <label for="message">Описание</label>
         <textarea id="message" name="description" placeholder="Напишите описание лота"
-            required><?=isset($lot['description']) ? $lot['description'] : ""; ?></textarea>
+            required><?=isset($lot['description']) ? htmlspecialchars($lot['description']) : ""; ?></textarea>
         <?php if (isset($lot['description'])): ?>
         <span class="form__error"><?=$errors['description']; ?></span>
         <?php endif; ?>
@@ -70,7 +70,7 @@
         <div class="form__item form__item--small <?=!empty($errors['start_price'])? "form__item--invalid" : ""; ?>">
             <label for="lot-rate">Начальная цена</label>
             <input id="lot-rate" type="number" name="start_price" placeholder="0"
-                value="<?=isset($lot['start_price']) ? $lot['start_price'] : ""; ?>" required>
+                value="<?=isset($lot['start_price']) ? htmlspecialchars($lot['start_price']) : ""; ?>" required>
             <?php if (isset($lot['start_price'])): ?>
             <span class="form__error"><?=$errors['start_price']; ?></span>
             <?php endif; ?>
@@ -79,7 +79,7 @@
         <div class="form__item form__item--small <?=!empty($errors['bet_step']) ? "form__item--invalid" : ""; ?>">
             <label for="lot-step">Шаг ставки</label>
             <input id="lot-step" type="number" name="bet_step" placeholder="0"
-                value="<?=isset($lot['bet_step']) ? $lot['bet_step'] : ""; ?>" required>
+                value="<?=isset($lot['bet_step']) ? htmlspecialchars($lot['bet_step']) : ""; ?>" required>
             <?php if (isset($lot['bet_step'])): ?>
             <span class="form__error"><?=$errors['bet_step']; ?></span>
             <?php endif; ?>
@@ -88,7 +88,7 @@
         <div class="form__item <?=!empty($errors['date_expire']) ? "form__item--invalid" : ""; ?>">
             <label for="lot-date">Дата окончания торгов</label>
             <input class="form__input-date" id="lot-date" type="date" name="date_expire"
-                value="<?=isset($lot['date_expire']) ? $lot['date_expire'] : ""; ?>" required>
+                value="<?=isset($lot['date_expire']) ? htmlspecialchars($lot['date_expire']) : ""; ?>" required>
             <?php if (isset($lot['date_expire'])): ?>
             <span class="form__error"><?=$errors['date_expire']; ?></span>
             <?php endif; ?>
