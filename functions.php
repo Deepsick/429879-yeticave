@@ -558,11 +558,11 @@ function check_user(mysqli $link, array $user_info): bool
     $email = mysqli_real_escape_string($link, $user_info['email']);
     $user_sql =
         "SELECT
-			`id`
-		FROM
-			`users`
-		WHERE
-			`email` = '$email'";
+                `id`
+            FROM
+                `users`
+            WHERE
+                `email` = '$email'";
 
     $res = mysqli_query($link, $user_sql);
 
@@ -611,7 +611,6 @@ function get_expired_lots(mysqli $link): array
  */
 function get_winners(mysqli $link, array &$expired_lots): array
 {
-    $winners = [];
     $winner_info_sql =
         "SELECT
 			`u`.`name` AS `user_name`,
@@ -831,9 +830,8 @@ function get_format_date(string $date): string
             floor($passed_minutes),
             ['минута', 'минуты', 'минут']
         );
-    } else {
-        return 'только что';
     }
+    return 'только что';
 }
 
 /**
@@ -868,35 +866,38 @@ function nounEnding(string $number, array $words = ['one', 'two', 'many']): stri
 /**
  * Валидирует форму.
  *
+ * @param array $lot Информация о лоте из формы
  * @return array Возвращает массив ошибок
  */
-function validate_form(): array
+function validate_form(array $lot): array
 {
     $required_fields = ['title', 'category', 'description', 'start_price', 'bet_step', 'date_expire'];
 
     $errors = [];
 
     foreach ($required_fields as $field) {
-        if (empty($_POST[$field])) {
+        if (isset($lot[$field]) && empty($lot[$field])) {
             $errors[$field] = 'Это поле надо заполнить';
         }
     }
 
-    if ($_POST['start_price'] <= 0) {
+    if (isset($lot['start_price']) && $lot['start_price'] <= 0) {
         $errors['start_price'] = 'Введите целое число больше нуля';
     }
 
-    if ($_POST['bet_step'] <= 0) {
+    if (isset($lot['bet_step']) && $lot['bet_step'] <= 0) {
         $errors['bet_step'] = 'Введите целое число больше нуля';
     }
 
-    $date_format = 'Y-m-d';
-    if (!validate_date($_POST['date_expire'], $date_format)) {
-        $errors['date_expire'] = 'Введите дату в верном формате';
-    }
+    if (isset($lot['date_expire'])) {
+        $date_format = 'Y-m-d';
+        if (!validate_date($lot['date_expire'], $date_format)) {
+            $errors['date_expire'] = 'Введите дату в верном формате';
+        }
 
-    if ($_POST['date_expire'] < date($date_format, strtotime('+1 day'))) {
-        $errors['date_expire'] = 'Дата должна быть больше текущей хотя бы на один день';
+        if ($lot['date_expire'] < date($date_format, strtotime('+1 day'))) {
+            $errors['date_expire'] = 'Дата должна быть больше текущей хотя бы на один день';
+        }
     }
 
     return $errors;
@@ -905,22 +906,25 @@ function validate_form(): array
 /**
  * Валидирует форму регистрации.
  *
+ * @param array $user Информация о пользователе из формы
  * @return array Возвращает массив ошибок
  */
-function validate_user_form(): array
+function validate_user_form(array $user): array
 {
     $required_fields = ['email', 'password', 'name', 'contacts'];
 
     $errors = [];
 
     foreach ($required_fields as $field) {
-        if (empty($_POST[$field])) {
+        if (isset($user[$field]) && empty($user[$field])) {
             $errors[$field] = 'Это поле надо заполнить';
         }
     }
 
-    if (!filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
-        $errors['email'] = 'Введен некорректный email';
+    if (isset($user['email'])) {
+        if (!filter_var($user['email'], FILTER_VALIDATE_EMAIL)) {
+            $errors['email'] = 'Введен некорректный email';
+        }
     }
 
     return $errors;
@@ -939,13 +943,15 @@ function validate_login_form(array $user_input): array
     $errors = [];
 
     foreach ($required_fields as $field) {
-        if (empty($user_input[$field])) {
+        if (isset($user_input[$field]) && empty($user_input[$field])) {
             $errors[$field] = 'Это поле надо заполнить';
         }
     }
 
-    if (!filter_var($user_input['email'], FILTER_VALIDATE_EMAIL)) {
-        $errors['email'] = 'Введен некорректный email';
+    if (isset($user_input['email'])) {
+        if (!filter_var($user_input['email'], FILTER_VALIDATE_EMAIL)) {
+            $errors['email'] = 'Введен некорректный email';
+        }
     }
 
     return $errors;

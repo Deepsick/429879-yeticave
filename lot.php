@@ -20,25 +20,24 @@ if (isset($_GET['id']) && $_GET['id'] !== '') {
             [
                 'categories' => $categories,
                 'page_title' => 'Yeticave - 404 not found',
-                'page_content' => $error_page_content
+                'page_content' => $error_page_content,
             ]
         );
 
         echo $error_page;
         exit;
-    } else {
-        $bets = get_bets($connection, intval($_GET['id']));
-
-        $is_bet_placed = count(array_filter($bets, function ($bet) {
-            return intval($bet['user_id']) === intval($_SESSION['user']['id']);
-        }
-        ));
-
-        $is_form_shown = isset($_SESSION['user'])
-        && !(intval($_SESSION['user']['id']) === intval($lot['user_id']))
-        && !(strtotime($lot['date_expire']) <= time())
-        && !$is_bet_placed;
     }
+    $bets = get_bets($connection, intval($_GET['id']));
+
+    $is_bet_placed = count(array_filter($bets, function ($bet) {
+        return intval($bet['user_id']) === intval($_SESSION['user']['id']);
+    }
+    ));
+
+    $is_form_shown = isset($_SESSION['user'])
+    && !(intval($_SESSION['user']['id']) === intval($lot['user_id']))
+    && !(strtotime($lot['date_expire']) <= time())
+    && !$is_bet_placed;
 }
 
 $errors = [];
@@ -64,7 +63,7 @@ $lot_page = include_template(
     [
         'categories' => $categories,
         'page_title' => $lot['title'],
-        'page_content' => $lot_page_content
+        'page_content' => $lot_page_content,
     ]
 );
 

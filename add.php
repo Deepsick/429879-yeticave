@@ -17,11 +17,11 @@ $categories = get_categories($connection);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $lot = $_POST;
 
-    $errors = validate_form();
+    $errors = validate_form($lot);
 
-    if ($_FILES['img_url']['tmp_name'] !== '') {
+    if (isset($_FILES['img_url']['tmp_name']) && $_FILES['img_url']['tmp_name'] !== '') {
         $img_url = check_file($_FILES['img_url']);
-        
+
         if (is_null($img_url)) {
             $errors['file'] = 'Загрузите картинку в формате png или jpeg';
         }
@@ -45,9 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (is_null($lot_id)) {
             echo 'Ошибка сохранения в БД';
             exit;
-        } else {
-            header("Location: lot.php?id=" . $lot_id);
         }
+        header("Location: lot.php?id=" . $lot_id);
     }
 }
 
@@ -56,7 +55,7 @@ $add_page_content = include_template(
     [
         'categories' => $categories,
         'errors' => $errors,
-        'lot' => $lot
+        'lot' => $lot,
     ]
 );
 
@@ -65,7 +64,7 @@ $add_page = include_template(
     [
         'categories' => $categories,
         'page_title' => 'Добавление лота',
-        'page_content' => $add_page_content
+        'page_content' => $add_page_content,
     ]
 );
 
