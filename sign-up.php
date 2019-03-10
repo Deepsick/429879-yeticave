@@ -11,9 +11,9 @@ $categories = get_categories($connection);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $_POST;
 
-    $errors = validate_user_form();
+    $errors = validate_user_form($user);
 
-    if ($_FILES['avatar_url']['tmp_name'] !== '') {
+    if (isset($_FILES['avatar_url']) && $_FILES['avatar_url']['tmp_name'] !== '') {
         $img_url = check_file($_FILES['avatar_url']);
 
         if (is_null($img_url)) {
@@ -21,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    if (check_user($connection, $user)) {
+    if (empty($errors['email']) && check_user($connection, $user)) {
         $errors['email'] = 'Пользователь с этим email уже зарегистрирован';
     }
 
@@ -40,9 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (is_null($user_id)) {
             echo 'Ошибка сохранения в БД';
             exit;
-        } else {
-            header("Location: login.php");
         }
+        header("Location: login.php");
     }
 }
 
@@ -50,7 +49,7 @@ $sign_up_page_content = include_template(
     'sign-up.php',
     [
         'errors' => $errors,
-        'user' => $user
+        'user' => $user,
     ]
 );
 
@@ -59,7 +58,7 @@ $sign_up_page = include_template(
     [
         'categories' => $categories,
         'page_title' => 'Регистрация',
-        'page_content' => $sign_up_page_content
+        'page_content' => $sign_up_page_content,
     ]
 );
 

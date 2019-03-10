@@ -1,5 +1,7 @@
 <?php
-$bet_price = intval($_POST['bet_price']);
+if (isset($_POST['bet_price'])) {
+    $bet_price = intval($_POST['bet_price']);
+}
 $lot = get_lot($connection, intval($_REQUEST['id']));
 $bets = get_bets($connection, intval($_REQUEST['id']));
 
@@ -37,7 +39,6 @@ if (!count($errors)) {
     if (is_null($bet_id)) {
         echo 'Ошибка сохранения в БД';
         exit;
-    } else {
-        header("Location: lot.php?id=" . $_REQUEST['id']);
     }
+    header("Location: lot.php?id=" . $_REQUEST['id']);
 }
