@@ -555,21 +555,18 @@ function insert_bet(mysqli $link, array $bet_properties)
  */
 function check_user(mysqli $link, array $user_info): bool
 {
-    if (isset($user_info['email'])) {
-        $email = mysqli_real_escape_string($link, $user_info['email']);
-        $user_sql =
-            "SELECT
+    $email = mysqli_real_escape_string($link, $user_info['email']);
+    $user_sql =
+        "SELECT
                 `id`
             FROM
                 `users`
             WHERE
                 `email` = '$email'";
 
-        $res = mysqli_query($link, $user_sql);
+    $res = mysqli_query($link, $user_sql);
 
-        return boolval(mysqli_num_rows($res));
-    }
-
+    return boolval(mysqli_num_rows($res));
 }
 
 /**
@@ -614,7 +611,6 @@ function get_expired_lots(mysqli $link): array
  */
 function get_winners(mysqli $link, array &$expired_lots): array
 {
-    $winners = [];
     $winner_info_sql =
         "SELECT
 			`u`.`name` AS `user_name`,

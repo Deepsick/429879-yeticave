@@ -1,7 +1,6 @@
 <?php
-if (isset($_POST['bet_price'])) {
-    $bet_price = intval($_POST['bet_price']);
-}
+
+$bet_price = intval($_POST['bet_price'] ?? 0);
 $lot = get_lot($connection, intval($_REQUEST['id']));
 $bets = get_bets($connection, intval($_REQUEST['id']));
 
