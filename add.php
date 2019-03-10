@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $errors = validate_form($lot);
 
-    if (isset($_FILES['img_url']) && $_FILES['img_url']['tmp_name'] !== '') {
+    if (isset($_FILES['img_url']['tmp_name']) && $_FILES['img_url']['tmp_name'] !== '') {
         $img_url = check_file($_FILES['img_url']);
 
         if (is_null($img_url)) {

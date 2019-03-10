@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $errors = validate_user_form($user);
 
-    if (isset($_FILES['avatar_url']) && $_FILES['avatar_url']['tmp_name'] !== '') {
+    if (isset($_FILES['avatar_url']['tmp_name']) && $_FILES['avatar_url']['tmp_name'] !== '') {
         $img_url = check_file($_FILES['avatar_url']);
 
         if (is_null($img_url)) {
