@@ -67,13 +67,17 @@ function get_short_time_left(string $expiredAt = 'tomorrow'): string
 
     if ($left_minutes >= ($hours_in_day * $minutes_in_hour)) {
         return date('d.m.y в H:i', strtotime($expiredAt));
-    } elseif ($left_minutes >= $minutes_in_hour) {
+    }
+
+    if ($left_minutes >= $minutes_in_hour) {
         return floor($left_minutes / $minutes_in_hour) . ' ' .
         nounEnding(
             floor($left_minutes / $minutes_in_hour),
             ['час', 'часа', 'часов']
         );
-    } elseif ($left_minutes >= 1) {
+    }
+
+    if ($left_minutes >= 1) {
         return floor($left_minutes) . ' ' .
         nounEnding(
             floor($left_minutes),
@@ -816,21 +820,27 @@ function get_format_date(string $date): string
     $seconds_in_minute = 60;
     $hours_in_day = 24;
     $passed_minutes = (time() - strtotime($date)) / $seconds_in_minute;
+
     if ($passed_minutes >= ($hours_in_day * $minutes_in_hour)) {
         return date('d.m.y в H:i', strtotime($date));
-    } elseif ($passed_minutes >= $minutes_in_hour) {
+    }
+
+    if ($passed_minutes >= $minutes_in_hour) {
         return floor(($passed_minutes / $minutes_in_hour)) . ' ' .
         nounEnding(
             floor(($passed_minutes / $minutes_in_hour)),
             ['час', 'часа', 'часов']
         );
-    } elseif ($passed_minutes >= 1) {
+    }
+
+    if ($passed_minutes >= 1) {
         return floor($passed_minutes) . ' ' .
         nounEnding(
             floor($passed_minutes),
             ['минута', 'минуты', 'минут']
         );
     }
+
     return 'только что';
 }
 
